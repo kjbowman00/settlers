@@ -6,16 +6,24 @@ import { MessageType } from '../../state/src/MessageType';
 import { JoinLobbyRef } from '../../state/src/messageTypes/JoinLobby';
 import { CreateLobbyRef } from '../../state/src/messageTypes/CreateLobby';
 import { StateUpdateRef } from '../../state/src/messageTypes/stateUpdate/StateUpdate';
+import { UserData } from './dataHolders/UserData';
+import { LobbiesData } from './dataHolders/LobbiesData';
+import { JoinLobbyHandler } from './handlers/JoinLobbyHandler';
+import { CreateLobbyHandler } from './handlers/CreateLobbyHandler';
 
-const wss = new WebSocketServer({ port: 8080 });
-console.log("HELLO");
+const PORT = 8080;
+const wss = new WebSocketServer({ port: PORT });
+console.log("Opening websocket on port 8080");
 
-const sockets: Map<string, WebSocket> = new Map();
-const lobbyIdToPlayerIds: Map<string, [string]> = new Map();
+const lobbiesData = new LobbiesData();
+const userData = new UserData();
+
+const createLobbyHandler = new CreateLobbyHandler(lobbiesData, userData);
+const joinLobbyHandler = new JoinLobbyHandler(lobbiesData, userData);
 
 wss.on('connection', function connection(ws) {
   const uuid = randomUUID();
-  sockets.set(uuid, ws);
+  userData.addUser(uuid, ws);
   
   ws.on('error', console.error);
 
@@ -23,7 +31,6 @@ wss.on('connection', function connection(ws) {
     console.log('received: %s', data);
     console.log("uuid: ", uuid);
     
-    console.log("AM I CRAZY");
     let parsed;
     try {
       console.log(data.toString());
@@ -37,38 +44,15 @@ wss.on('connection', function connection(ws) {
     // Ensure data types match
     if (!isValid(parsed, SocketMessageRef)) return;
     const socketMessage: ISocketMessage = parsed as ISocketMessage;
-    console.log("VALID1");
+    console.log("Valid socket message");
 
     // Switch depending on what message type was sent.
     switch (socketMessage.messageType) {
       case MessageType.JOIN_LOBBY:
-        if (!isValid(socketMessage.payload, JoinLobbyRef)) return;
-        console.log("VALID_JOIN");
-        const parsedLobbyId = parsed.payload.gameId;
-        const lobbyPlayers = lobbyIdToPlayerIds.get(parsedLobbyId);
-        if (lobbyPlayers != undefined) {
-          for (const playerId of lobbyPlayers) {
-            const socket = sockets.get(playerId);
-            socket?.send("playerJoined");
-          }
-          lobbyPlayers.push(uuid);
-          ws.send("successfullyJoined");
-        }
+        joinLobbyHandler.handle(parsed.payload, uuid);
         break;
       case MessageType.CREATE_LOBBY:
-        if (!isValid(socketMessage.payload, CreateLobbyRef)) return;
-        console.log("VALID_CREATE");
-        // Remove them from a lobby if they are currently in one
-        if (lobbyId != null) {
-          const index = lobbyIdToPlayerIds.get(lobbyId)?.indexOf(uuid);
-          if (index != -1 && index != undefined) {
-            lobbyIdToPlayerIds.get(lobbyId)?.splice(index, 1);
-          }
-        }
-        lobbyId = randomUUID();
-        lobbyIdToPlayerIds.set(lobbyId, [uuid]);
-        // Notify player they have joiend and give them the ID
-        ws.send("successfullyCreatedLobby");
+        createLobbyHandler.handle(parsed.payload, uuid);
         break;
       case MessageType.STATE_UPDATE:
         if (!isValid(socketMessage.payload, StateUpdateRef)) return;
