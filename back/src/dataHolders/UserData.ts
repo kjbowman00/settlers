@@ -1,16 +1,16 @@
-import { WebSocket } from 'ws';
+import { SocketWrapper } from '../SocketMessageHandler';
 
 
 export class UserData {
     uuids: string[];
-    uuidToSocket: Map<string, WebSocket>;
+    uuidToSocket: Map<string, SocketWrapper>;
 
     constructor() {
         this.uuids = [];
         this.uuidToSocket = new Map();
     }
 
-    addUser(uuid: string, socket: WebSocket) {
+    addUser(uuid: string, socket: SocketWrapper) {
         this.uuids.push(uuid);
         this.uuidToSocket.set(uuid, socket);
     }

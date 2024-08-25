@@ -1,36 +1,42 @@
 import { randomUUID } from "crypto";
-import { LobbyData } from "./LobbyData";
+import { LobbyState } from "../../../state/src/state/LobbyState";
+import { PlayerState } from "../../../state/src/state/PlayerState";
 
 export class LobbiesData {
     playerIdToLobbyId: Map<string, string>;
-    lobbyIdToLobbyData: Map<string, LobbyData>; 
+    lobbyIdToLobbyData: Map<string, LobbyState>; 
 
     constructor() {
         this.playerIdToLobbyId = new Map();
         this.lobbyIdToLobbyData = new Map();
     }
 
-    createLobby(firstPlayerId: string): string {
+    createLobby(firstPlayer: PlayerState): string {
         // Remove from old lobby if player was in one
-        this.removePlayer(firstPlayerId);
+        this.removePlayer(firstPlayer.id);
 
-        const lobby = new LobbyData();
+        const lobby = new LobbyState(firstPlayer);
         const lobbyId = lobby.lobbyId;
-        lobby.players.push(firstPlayerId);
 
         this.lobbyIdToLobbyData.set(lobbyId, lobby);
-        this.playerIdToLobbyId.set(firstPlayerId, lobbyId);
+        this.playerIdToLobbyId.set(firstPlayer.id, lobbyId);
         return lobbyId;
     }
 
-    joinLobby(playerId: string, lobbyId: string): boolean {
-        this.removePlayer(playerId);
+    joinLobby(player: PlayerState, lobbyId: string): boolean {
+        this.removePlayer(player.id);
 
         const lobby = this.lobbyIdToLobbyData.get(lobbyId);
         if (lobby == undefined) return false;
-        lobby.players.push(playerId);
-        this.playerIdToLobbyId.set(playerId, lobbyId);
+        lobby.addPlayer(player);
+        this.playerIdToLobbyId.set(player.id, lobbyId);
         return true;
+    }
+
+    getLobbyDataFromPlayer(playerId: string): undefined | LobbyState {
+        const lobbyId = this.playerIdToLobbyId.get(playerId);
+        if (lobbyId == undefined) return undefined;
+        return this.lobbyIdToLobbyData.get(lobbyId);
     }
 
     private removePlayer(uuid: string) {
@@ -40,10 +46,7 @@ export class LobbiesData {
 
         const lobby = this.lobbyIdToLobbyData.get(lobbyId);
         if (lobby == undefined) return;
-        const idx = lobby.players.indexOf(uuid);
-        if (idx == -1) return;
-        lobby.players.splice(idx, 1);
-
+        lobby.removePlayer(uuid);
         if (lobby.players.length == 0) {
             this.removeLobby(lobbyId);
         }
@@ -54,7 +57,7 @@ export class LobbiesData {
         if (lobby == undefined) return;
 
         for (const player of lobby.players) {
-            this.playerIdToLobbyId.delete(player);
+            this.playerIdToLobbyId.delete(player.id);
         }
 
         this.lobbyIdToLobbyData.delete(lobbyId);

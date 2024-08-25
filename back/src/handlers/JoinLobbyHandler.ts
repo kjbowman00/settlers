@@ -1,8 +1,9 @@
-import { JoinLobby, JoinLobbyRef } from "../../../state/src/messageTypes/JoinLobby";
-import { isValid } from "../../../state/src/Validator";
+import { JoinLobby, JoinLobbyRef } from "../../../state/src/sockets/clientMessageTypes/JoinLobby";
+import { isValid } from "../../../state/src/sockets/Validator";
 import { LobbiesData } from "../dataHolders/LobbiesData";
 import { UserData } from "../dataHolders/UserData";
-import { JoinLobbyResult } from '../../../state/src/messageTypes/JoinLobbyResult';
+import { JoinLobbyResult } from '../../../state/src/sockets/serverMessageTypes/JoinLobbyResult';
+import { PlayerState } from "../../../state/src/state/PlayerState";
 
 
 
@@ -19,7 +20,9 @@ export class JoinLobbyHandler {
         const req = o as JoinLobby;
         console.log("VALID JOIN LOBBY: ", req);
 
-        const success = this.lobbiesData.joinLobby(senderUUID, req.lobbyID);
+        const newState = new PlayerState(senderUUID, "USERNAME", "blue");
+
+        const success = this.lobbiesData.joinLobby(newState, req.lobbyID);
 
         // Send success message
         const socket = this.userData.uuidToSocket.get(senderUUID);
@@ -30,11 +33,11 @@ export class JoinLobbyHandler {
 
         if (!success) return;
         // Send joined message to all other users in lobby
-        const playerIds = this.lobbiesData.lobbyIdToLobbyData.get(req.lobbyID)!.players;
-        for (const playerId of playerIds) {
-            if (playerId != senderUUID) {
+        const players = this.lobbiesData.lobbyIdToLobbyData.get(req.lobbyID)!.players;
+        for (const player of players) {
+            if (player.id != senderUUID) {
                 const update = "TODO: player joined lobby";
-                this.userData.uuidToSocket.get(playerId)?.send(JSON.stringify(update));
+                this.userData.uuidToSocket.get(player.id)?.send(JSON.stringify(update));
             }
         }
     }

@@ -1,0 +1,11 @@
+export enum ClientMessageType {
+    // CLIENT TO SERVER
+    CREATE_LOBBY,
+    JOIN_LOBBY,
+    LEAVE_LOBBY,
+    UPDATE_PLAYER,
+    START_GAME,
+    ROAD_HOUSE_CHANGE,
+    TRADE_REQUEST,
+    END_TURN,
+}

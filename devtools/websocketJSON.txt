@@ -1,0 +1,10 @@
+SocketMessage: 
+{ "messageID": 0, "messageType": 0, "payload": {} }
+
+CreateLobby:
+{ "messageID": 0, "messageType": 0, "payload": {} }
+
+JoinLobby: 
+{ "messageID": 0, "messageType": 1, "payload": { "lobbyID": "foo" } }
+{ "messageID": 0, "messageType": 1, "payload": { "lobbyID": "22378968-1569-481d-9fb7-ce20dd093af7" } }
+61883112-b00f-4abd-8543-439cc5c155e6

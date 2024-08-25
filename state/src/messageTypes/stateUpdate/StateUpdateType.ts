@@ -1,4 +1,0 @@
-export enum StateUpdateType {
-    DEFAULT
-
-}
