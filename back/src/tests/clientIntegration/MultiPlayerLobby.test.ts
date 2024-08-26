@@ -82,3 +82,14 @@ test('Next Turn', () => {
     msg = user1.messages[2].payload as TurnStarted;
     expect(msg.playerId).toEqual(user1.id);
 });
+
+test('Next turn wrong person', () => {
+    // Start
+    socketHandler.onMessage(user1.id, startGame);
+
+    // Next turn but user2 calls it
+    socketHandler.onMessage(user2.id, endTurn);
+    expect(user1.messages.length).toEqual(1);
+});
+
+// TODO: Test for house updates

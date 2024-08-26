@@ -7,7 +7,6 @@ import { ClientMessageType } from "../../../../state/src/sockets/ClientMessageTy
 import { JoinLobby } from "../../../../state/src/sockets/clientMessageTypes/JoinLobby";
 import { ServerSocketMessage } from "../../../../state/src/sockets/ServerSocketMessage";
 import { PlayerJoinedLobby } from '../../../../state/src/sockets/serverMessageTypes/PlayerJoinedLobby';
-import { Server } from "http";
 import { JoinLobbyResult } from "../../../../state/src/sockets/serverMessageTypes/JoinLobbyResult";
 
 test("Create and join lobby", () => {
