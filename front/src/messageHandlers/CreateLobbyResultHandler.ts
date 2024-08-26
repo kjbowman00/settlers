@@ -1,3 +1,4 @@
+import { ClientSocketMessage } from "../../../state/src/sockets/ClientSocketMessage";
 import { CreateLobbyResult, CreateLobbyResultRef } from "../../../state/src/sockets/serverMessageTypes/CreateLobbyResult";
 import { isValid } from "../../../state/src/sockets/Validator";
 import { MenuManager } from "../components/MenuManager";
@@ -9,7 +10,7 @@ export class CreateLobbyResultHandler {
         this.menuManager = menuManager;
     }
 
-    handle(data: any) {
+    handle(data: any, waitingMsg: object | undefined) {
         console.log("HANDLING");
         console.log(data);
         if ( ! isValid(data, CreateLobbyResultRef) ) return;

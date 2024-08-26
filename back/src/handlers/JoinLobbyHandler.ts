@@ -18,7 +18,7 @@ export class JoinLobbyHandler {
         this.userData = userData;
     }
 
-    handle(o: Object, senderUUID: string) {
+    handle(o: Object, senderUUID: string, msgNumber: number) {
         if (!isValid(o, JoinLobbyRef)) return;
         const req = o as JoinLobby;
         console.log("VALID JOIN LOBBY: ", req);
@@ -31,7 +31,7 @@ export class JoinLobbyHandler {
         const socket = this.userData.uuidToSocket.get(senderUUID);
         if (socket != undefined) {
             const res = new ServerSocketMessage(
-                0, ServerMessageType.JOIN_LOBBY_RESULT, new JoinLobbyResult(success));
+                msgNumber, ServerMessageType.JOIN_LOBBY_RESULT, new JoinLobbyResult(success));
             socket.send(JSON.stringify(res));
         }
 
@@ -41,7 +41,7 @@ export class JoinLobbyHandler {
         for (const player of players) {
             if (player.id != senderUUID) {
                 const msg = new ServerSocketMessage(
-                    0, ServerMessageType.PLAYER_JOINED_LOBBY, new PlayerJoinedLobby(
+                    -1, ServerMessageType.PLAYER_JOINED_LOBBY, new PlayerJoinedLobby(
                         newState
                     )
                 );

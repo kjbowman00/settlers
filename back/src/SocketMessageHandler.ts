@@ -48,7 +48,7 @@ export class SocketMessageHandler {
         // Switch depending on what message type was sent.
         switch (socketMessage.messageType) {
         case ClientMessageType.JOIN_LOBBY:
-            this.joinLobbyHandler.handle(parsed.payload, uuid);
+            this.joinLobbyHandler.handle(parsed.payload, uuid, socketMessage.messageID);
             break;
         case ClientMessageType.CREATE_LOBBY:
             this.createLobbyHandler.handle(parsed.payload, uuid);

@@ -4,6 +4,9 @@ import { SocketMessageHandler } from './SocketMessageHandler';
 
 
 const endpoint = 'ws://localhost:8080'; //TODO: The backend should hand me this value somehow
+/**
+ * This class isolates the web socket implementation. Handles reconnecting
+ */
 export class WebsocketController {
     socket: WebSocket;
     socketMessageHandler: SocketMessageHandler;
@@ -28,12 +31,7 @@ export class WebsocketController {
 
     }
 
-    send(msg: object, msgType: ClientMessageType) {
-        const clientMessage = new ClientSocketMessage(
-            0, msgType, msg
-        );
-        
-        const str = JSON.stringify(clientMessage);
+    send(str: string) {
         if (this.socket.readyState != WebSocket.OPEN) {
             this.queuedMessages.push(str);
         } else {

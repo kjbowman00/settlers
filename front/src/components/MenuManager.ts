@@ -21,7 +21,6 @@ export class MenuManager {
     loadingMenu: LoadingMenu;
 
     socketMessageHandler: SocketMessageHandler;
-    websocketController: WebsocketController;
 
     constructor() {
         this.mainMenu = new MainMenu(this);
@@ -30,7 +29,6 @@ export class MenuManager {
         this.loadingMenu = new LoadingMenu(this);
 
         this.socketMessageHandler = new SocketMessageHandler(this);
-        this.websocketController = new WebsocketController(this.socketMessageHandler);
 
         // Auto-join lobby
         let params = new URLSearchParams(document.location.search);
@@ -38,7 +36,7 @@ export class MenuManager {
         if (lobbyName != null) {
             // this.switchToLoading(false, null, null, lobbyName);  
             this.switchToLoading();
-            this.websocketController.send(new JoinLobby(lobbyName), ClientMessageType.JOIN_LOBBY);
+            this.socketMessageHandler.send(new JoinLobby(lobbyName), ClientMessageType.JOIN_LOBBY, true);
         }
     }
 

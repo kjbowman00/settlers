@@ -25,7 +25,7 @@ export class MainMenu extends AbstractMenuContainer {
                 playerName = null;
             }
             menuManager.switchToLoading();
-            menuManager.websocketController.send(new CreateLobby(), ClientMessageType.CREATE_LOBBY);
+            menuManager.socketMessageHandler.send(new CreateLobby(), ClientMessageType.CREATE_LOBBY, false);
         }
     }
 

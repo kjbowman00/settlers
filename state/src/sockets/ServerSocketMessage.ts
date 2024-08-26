@@ -1,8 +1,8 @@
 import { ServerMessageType } from "./ServerMessageType";
 
 export interface IServerSocketMessage {
-    // message ID so a response can be given for that message
-    messageID: number;
+    // the number corresponding to the thing being responded to. -1 if not responding
+    responseID: number;
     // Message type : enum for message types
     messageType: ServerMessageType;
     // Payload: object of any type - the actual data
@@ -10,11 +10,11 @@ export interface IServerSocketMessage {
 }
 
 export class ServerSocketMessage implements IServerSocketMessage {
-    messageID: number;
+    responseID: number;
     messageType: ServerMessageType;
     payload: Object;
-    constructor(messageID: number, messageType: ServerMessageType, payload: Object) {
-        this.messageID = messageID;
+    constructor(responseID: number, messageType: ServerMessageType, payload: Object) {
+        this.responseID = responseID;
         this.messageType = messageType;
         this.payload = payload;
     }
