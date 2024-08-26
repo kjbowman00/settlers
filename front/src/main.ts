@@ -1,6 +1,4 @@
-import "./init";
-import { MenuManager } from "./components/MenuManager";
-import { AWSWebSocketConnector } from './components/AWSWebSocketConnector';
+import { MenuManager } from "./components/MenuManager.js";
 
 onload = () => {
     let menuManager = new MenuManager();

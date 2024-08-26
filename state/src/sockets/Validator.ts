@@ -10,7 +10,7 @@ export function isValid(objToValidate: any, referenceObj: any): boolean {
         if (typeof(referenceObj[key]) !== typeof(objToValidate[key])) {
             valid = false;
         } 
-        if (typeof(referenceObj[key] == "object")) {
+        if (typeof(referenceObj[key]) == "object") {
             const subValid = isValid(objToValidate[key], referenceObj[key]);
             if (!subValid) valid = false;
         }

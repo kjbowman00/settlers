@@ -3,6 +3,9 @@ import { AppSync } from "./AWSAppSync";
 import { MenuManager } from "./MenuManager";
 import { AbstractMenuContainer } from "./AbstractMenuContainer";
 import { randomPlayerColor } from "../Utility/PlayerRandomizer";
+import { ClientSocketMessage } from "../../../state/src/sockets/ClientSocketMessage";
+import { CreateLobby } from "../../../state/src/sockets/clientMessageTypes/CreateLobby";
+import { ClientMessageType } from "../../../state/src/sockets/ClientMessageType";
 
 export class MainMenu extends AbstractMenuContainer {
 
@@ -21,7 +24,8 @@ export class MainMenu extends AbstractMenuContainer {
             if (playerName == "") {
                 playerName = null;
             }
-            menuManager.switchToLobbyMenu(true, playerName, playerColor);
+            menuManager.switchToLoading();
+            menuManager.websocketController.send(new CreateLobby(), ClientMessageType.CREATE_LOBBY);
         }
     }
 
