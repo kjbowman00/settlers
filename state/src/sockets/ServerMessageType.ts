@@ -1,6 +1,9 @@
 
 export enum ServerMessageType {
     CREATE_LOBBY_RESULT,
+    JOIN_LOBBY_RESULT,
     PLAYER_JOINED_LOBBY,
+    GAME_STARTED,
+    TURN_STARTED
 
 }

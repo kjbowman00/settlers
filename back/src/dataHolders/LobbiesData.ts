@@ -1,21 +1,24 @@
 import { randomUUID } from "crypto";
 import { LobbyState } from "../../../state/src/state/LobbyState";
 import { PlayerState } from "../../../state/src/state/PlayerState";
+import { UserData } from "./UserData";
 
 export class LobbiesData {
     playerIdToLobbyId: Map<string, string>;
     lobbyIdToLobbyData: Map<string, LobbyState>; 
+    userData: UserData;
 
-    constructor() {
+    constructor(userData: UserData) {
         this.playerIdToLobbyId = new Map();
         this.lobbyIdToLobbyData = new Map();
+        this.userData = userData;
     }
 
     createLobby(firstPlayer: PlayerState): string {
         // Remove from old lobby if player was in one
         this.removePlayer(firstPlayer.id);
 
-        const lobby = new LobbyState(firstPlayer);
+        const lobby = new LobbyState(firstPlayer, this.userData);
         const lobbyId = lobby.lobbyId;
 
         this.lobbyIdToLobbyData.set(lobbyId, lobby);

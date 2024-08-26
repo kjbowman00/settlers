@@ -4,23 +4,29 @@ import { isValid } from "../../state/src/sockets/Validator";
 import { LobbiesData } from "./dataHolders/LobbiesData";
 import { UserData } from "./dataHolders/UserData";
 import { CreateLobbyHandler } from "./handlers/CreateLobbyHandler";
+import { EndTurnHandler } from "./handlers/EndTurnHandler";
 import { JoinLobbyHandler } from "./handlers/JoinLobbyHandler";
+import { StartGameHandler } from "./handlers/StartGameHandler";
 
-const lobbiesData = new LobbiesData();
-const userData = new UserData();
-
-const createLobbyHandler = new CreateLobbyHandler(lobbiesData, userData);
-const joinLobbyHandler = new JoinLobbyHandler(lobbiesData, userData);
 
 export class SocketMessageHandler {
+    running = true;
 
+    userData = new UserData();
+    lobbiesData = new LobbiesData(this.userData);
+
+    createLobbyHandler = new CreateLobbyHandler(this.lobbiesData, this.userData);
+    joinLobbyHandler = new JoinLobbyHandler(this.lobbiesData, this.userData);
+    startGamehandler = new StartGameHandler(this.lobbiesData, this.userData);
+    endTurnHandler = new EndTurnHandler(this.lobbiesData, this.userData);
 
     userConnected(id: string, socketWrapper: SocketWrapper) {
-        userData.addUser(id, socketWrapper);
-
+        if ( ! this.running) return;
+        this.userData.addUser(id, socketWrapper);
     }
 
     onMessage(uuid :string, data: any) {
+        if ( ! this.running) return;
         console.log('received: %s', data);
         console.log("uuid: ", uuid);
         
@@ -42,18 +48,20 @@ export class SocketMessageHandler {
         // Switch depending on what message type was sent.
         switch (socketMessage.messageType) {
         case ClientMessageType.JOIN_LOBBY:
-            joinLobbyHandler.handle(parsed.payload, uuid);
+            this.joinLobbyHandler.handle(parsed.payload, uuid);
             break;
         case ClientMessageType.CREATE_LOBBY:
-            createLobbyHandler.handle(parsed.payload, uuid);
+            this.createLobbyHandler.handle(parsed.payload, uuid);
             break;
         case ClientMessageType.END_TURN:
+            this.endTurnHandler.handle(parsed.payload, uuid);
             break;
         case ClientMessageType.LEAVE_LOBBY:
             break;
         case ClientMessageType.ROAD_HOUSE_CHANGE:
             break;
         case ClientMessageType.START_GAME:
+            this.startGamehandler.handle(parsed.payload, uuid);
             break;
         case ClientMessageType.TRADE_REQUEST:
             break;
@@ -62,6 +70,18 @@ export class SocketMessageHandler {
         }
     }
 
+    shutdown() {
+        // Prevent any more connections
+        this.running = false;
+
+        // Clean up all lobby timers
+        this.lobbiesData.lobbyIdToLobbyData.forEach((lobby) => {
+            lobby.shutdown();
+        });
+
+        // Notify all clients that this server has gone down
+        //TODO:
+    }
 }
 
 // Need this so we can mock sockets easily and test fake clients

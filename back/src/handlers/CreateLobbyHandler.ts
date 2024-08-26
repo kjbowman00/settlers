@@ -4,6 +4,8 @@ import { LobbiesData } from "../dataHolders/LobbiesData";
 import { UserData } from "../dataHolders/UserData";
 import { CreateLobbyResult } from '../../../state/src/sockets/serverMessageTypes/CreateLobbyResult';
 import { PlayerState } from "../../../state/src/state/PlayerState";
+import { ServerSocketMessage } from '../../../state/src/sockets/ServerSocketMessage';
+import { ServerMessageType } from '../../../state/src/sockets/ServerMessageType';
 
 
 // General idea: FooData classes handle modifying the underlying data model. House/road location, players
@@ -29,11 +31,12 @@ export class CreateLobbyHandler {
         // Send success message
         const socket = this.userData.uuidToSocket.get(senderUUID);
         if (socket != undefined) {
-            const res = new CreateLobbyResult(true, lobbyId);
-            console.log("SENDING");
+            const res = new ServerSocketMessage(
+                0, ServerMessageType.CREATE_LOBBY_RESULT, new CreateLobbyResult(
+                    true, lobbyId
+                )
+            );
             socket.send(JSON.stringify(res));
-            console.log("SENT");
-            console.log(socket);
         }
     }
 }
