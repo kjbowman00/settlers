@@ -12,14 +12,14 @@ export class CreateLobbyResultHandler {
     handle(data: any) {
         console.log("HANDLING");
         console.log(data);
-        if ( ! isValid(data, CreateLobbyResultRef) ) return;
+        if ( ! CreateLobbyResult.validate(data) ) return;
 
         const createLobbyResult = data as CreateLobbyResult;
         if ( ! createLobbyResult.success) return;
         
         // Update menu to show lobby
         this.menuManager.lobbyMenu.setLobbyNameDisplay(createLobbyResult.lobbyID);
-        this.menuManager.lobbyMenu.setPlayersNamesDisplay([]);
+        this.menuManager.lobbyMenu.setPlayersNamesDisplay(['your_name_here']);
         this.menuManager.switchToLobbyMenu();
     }
 }

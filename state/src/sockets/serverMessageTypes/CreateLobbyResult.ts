@@ -12,5 +12,9 @@ export class CreateLobbyResult implements ICreateLobbyResult {
         this.success = success;
         this.lobbyID = lobbyID;
     }
+
+    static validate(o: any) {
+        return typeof(o.lobbyID) === 'string' &&
+            typeof(o.success) === 'boolean';
+    }
 }
-export const CreateLobbyResultRef = new CreateLobbyResult(true, '');

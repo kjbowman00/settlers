@@ -5,5 +5,7 @@ export interface ITradeRequest {
 
 export class TradeRequest implements ITradeRequest {
 
+    static validate(o: any) {
+        return true;
+    }
 }
-export const TradeRequestRef = new TradeRequest();

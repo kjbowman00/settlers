@@ -19,5 +19,11 @@ export class RoadHouseChange implements IRoadHouseChange {
         this.k = k;
         this.roadHouseType = roadHouseType;
     }
+
+    static validate(o: any) {
+        return typeof(o.i) === 'number' &&
+            typeof (o.j) === 'number' &&
+            typeof (o.k) === 'number' &&
+            typeof(o.roadHouseType) === 'number';
+    }
 }
-export const RoadHouseChangeRef = new RoadHouseChange(0,0,0,0);

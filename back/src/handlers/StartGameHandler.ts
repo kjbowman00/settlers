@@ -1,5 +1,4 @@
-import { StartGame, StartGameRef } from "../../../state/src/sockets/clientMessageTypes/StartGame";
-import { isValid } from "../../../state/src/sockets/Validator";
+import { StartGame } from "../../../state/src/sockets/clientMessageTypes/StartGame";
 import { LobbiesData } from "../dataHolders/LobbiesData";
 import { UserData } from "../dataHolders/UserData";
 
@@ -12,7 +11,7 @@ export class StartGameHandler {
     }
 
     handle(o: Object, senderUUID: string) {
-        if (!isValid(o, StartGameRef)) return;
+        if ( ! StartGame.validate(o) ) return;
         const req = o as StartGame;
 
         const lobbyData = this.lobbiesData.getLobbyDataFromPlayer(senderUUID);

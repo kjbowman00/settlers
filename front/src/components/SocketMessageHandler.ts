@@ -1,4 +1,4 @@
-import { ServerSocketMessageRef, IServerSocketMessage } from '../../../state/src/sockets/ServerSocketMessage';
+import { ServerSocketMessageRef, IServerSocketMessage, ServerSocketMessage } from '../../../state/src/sockets/ServerSocketMessage';
 import { isValid } from '../../../state/src/sockets/Validator';
 import { ServerMessageType } from '../../../state/src/sockets/ServerMessageType';
 import { CreateLobbyResultHandler } from '../messageHandlers/CreateLobbyResultHandler';
@@ -12,12 +12,13 @@ export class SocketMessageHandler {
     //Handlers
     createLobbyResultHandler;
     gameStartedHandler = new GameStartedHandler();
-    joinLobbyResultHanlder = new JoinLobbyResultHandler();
+    joinLobbyResultHanlder;
     playerJoinedLobbyHandler = new PlayerJoinedLobbyHandler();
     turnStartedHandler = new TurnStartedHandler();
 
     constructor(menuManager: MenuManager) {
         this.createLobbyResultHandler = new CreateLobbyResultHandler(menuManager);
+        this.joinLobbyResultHanlder = new JoinLobbyResultHandler(menuManager);
 
     }
 
@@ -32,7 +33,7 @@ export class SocketMessageHandler {
         }
 
         // Ensure data types match
-        if (!isValid(parsed, ServerSocketMessageRef)) return;
+        if ( ! ServerSocketMessage.validate(parsed) ) return;
         const socketMessage: IServerSocketMessage = parsed as IServerSocketMessage;
 
         // Switch depending on what message type was sent.

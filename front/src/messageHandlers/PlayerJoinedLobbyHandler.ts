@@ -1,12 +1,20 @@
-import { PlayerJoinedLobby, PlayerJoinedLobbyRef } from "../../../state/src/sockets/serverMessageTypes/PlayerJoinedLobby";
-import { isValid } from "../../../state/src/sockets/Validator";
+import { PlayerJoinedLobby } from "../../../state/src/sockets/serverMessageTypes/PlayerJoinedLobby";
+import { MenuManager } from "../components/MenuManager";
 
 export class PlayerJoinedLobbyHandler {
+    menuManager;
+
+    constructor(menuManager: MenuManager) {
+        this.menuManager = menuManager;
+    }
 
     handle(data: any) {
-        if ( ! isValid(data, PlayerJoinedLobbyRef) ) return;
+        if ( ! PlayerJoinedLobby.validate(data) ) return;
 
         const playerJoinedLobby = data as PlayerJoinedLobby;
+        const player = playerJoinedLobby.player;
+
+        // this.menuManager.lobbyMenu.lobbyMenuPlayersNamesList
         
     }
 }

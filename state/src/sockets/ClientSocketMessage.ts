@@ -18,5 +18,11 @@ export class ClientSocketMessage implements IClientSocketMessage {
         this.messageType = messageType;
         this.payload = payload;
     }
+
+    static validate(o: any) {
+        return typeof(o) === 'object' &&
+            typeof(o.messageID) === 'number' &&
+            typeof(o.messageType) === 'number' &&
+            typeof(o.payload) === 'object';
+    }
 }
-export const ClientSocketMessageRef = new ClientSocketMessage(0, ClientMessageType.CREATE_LOBBY, new Object());

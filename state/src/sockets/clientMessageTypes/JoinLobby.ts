@@ -9,5 +9,8 @@ export class JoinLobby implements IJoinLobby {
     constructor(lobbyID: string) {
         this.lobbyID = lobbyID;
     }
+
+    static validate(o: any) {
+        return typeof o.lobbyID === 'string';
+    }
 }
-export const JoinLobbyRef = new JoinLobby('');
