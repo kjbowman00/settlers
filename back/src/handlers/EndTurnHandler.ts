@@ -1,5 +1,4 @@
-import { EndTurn, EndTurnRef } from "../../../state/src/sockets/clientMessageTypes/EndTurn";
-import { isValid } from "../../../state/src/sockets/Validator";
+import { EndTurn } from "../../../state/src/sockets/clientMessageTypes/EndTurn";
 import { LobbiesData } from "../dataHolders/LobbiesData";
 import { UserData } from "../dataHolders/UserData";
 
@@ -12,7 +11,7 @@ export class EndTurnHandler {
     }
 
     handle(o: Object, senderUUID: string) {
-        if (!isValid(o, EndTurnRef)) return;
+        if ( ! EndTurn.validate(o) ) return;
         const req = o as EndTurn;
 
         const lobbyData = this.lobbiesData.getLobbyDataFromPlayer(senderUUID);

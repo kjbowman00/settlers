@@ -1,6 +1,5 @@
 import { ClientMessageType } from "../../state/src/sockets/ClientMessageType";
-import { ClientSocketMessageRef, IClientSocketMessage } from "../../state/src/sockets/ClientSocketMessage";
-import { isValid } from "../../state/src/sockets/Validator";
+import { ClientSocketMessage, IClientSocketMessage } from "../../state/src/sockets/ClientSocketMessage";
 import { LobbiesData } from "./dataHolders/LobbiesData";
 import { UserData } from "./dataHolders/UserData";
 import { CreateLobbyHandler } from "./handlers/CreateLobbyHandler";
@@ -41,7 +40,7 @@ export class SocketMessageHandler {
 
         console.log("RIGHT BEFORE VALIDATION CHECK");
         // Ensure data types match
-        if (!isValid(parsed, ClientSocketMessageRef)) return;
+        if ( ! ClientSocketMessage.validate(parsed) ) return;
         const socketMessage: IClientSocketMessage = parsed as IClientSocketMessage;
         console.log("Valid socket message");
 

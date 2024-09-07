@@ -1,5 +1,4 @@
-import { ServerSocketMessageRef, IServerSocketMessage } from '../../../state/src/sockets/ServerSocketMessage';
-import { isValid } from '../../../state/src/sockets/Validator';
+import { IServerSocketMessage, ServerSocketMessage } from '../../../state/src/sockets/ServerSocketMessage';
 import { ServerMessageType } from '../../../state/src/sockets/ServerMessageType';
 import { CreateLobbyResultHandler } from '../messageHandlers/CreateLobbyResultHandler';
 import { GameStartedHandler } from '../messageHandlers/GameStartedHandler';
@@ -16,7 +15,7 @@ export class SocketMessageHandler {
     createLobbyResultHandler;
     gameStartedHandler = new GameStartedHandler();
     joinLobbyResultHanlder; 
-    playerJoinedLobbyHandler = new PlayerJoinedLobbyHandler();
+    playerJoinedLobbyHandler;
     turnStartedHandler = new TurnStartedHandler();
 
     websocketController: WebsocketController;
@@ -28,6 +27,7 @@ export class SocketMessageHandler {
 
         this.createLobbyResultHandler = new CreateLobbyResultHandler(menuManager);
         this.joinLobbyResultHanlder = new JoinLobbyResultHandler(menuManager);
+        this.playerJoinedLobbyHandler = new PlayerJoinedLobbyHandler(menuManager);
     }
     
     send(msg: object, msgType: ClientMessageType, responseExpected: boolean) {
@@ -53,8 +53,10 @@ export class SocketMessageHandler {
             return;
         }
 
+        console.log("RECEIEVED");
+        console.log(parsed);
         // Ensure data types match
-        if (!isValid(parsed, ServerSocketMessageRef)) return;
+        if ( ! ServerSocketMessage.validate(parsed) ) return;
         const socketMessage: IServerSocketMessage = parsed as IServerSocketMessage;
 
         // See if it is responding to something we are waiting for

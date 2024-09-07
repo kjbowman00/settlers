@@ -4,7 +4,7 @@ import { isValid } from "../../../state/src/sockets/Validator";
 export class GameStartedHandler {
 
     handle(data: any) {
-        if ( ! isValid(data, GameStartedRef) ) return;
+        if ( ! GameStarted.validate(data ) ) return;
 
         const gameStarted = data as GameStarted;
         

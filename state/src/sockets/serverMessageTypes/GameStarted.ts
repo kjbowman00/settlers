@@ -19,5 +19,11 @@ export class GameStarted implements IGameStarted {
         this.firstPlayersTurn = firstPlayersTurn;
         this.settings = settings;
     }
+
+    static validate(o: any) {
+        return typeof(o.firstPlayersTurn) === 'object' &&
+            TurnStarted.validate(o.firstPlayersTurn) &&
+            typeof(o.seed) === 'number' &&
+            typeof(o.settings) === 'object';
+    }
 }
-export const GameStartedRef = new GameStarted(new TurnStarted(""), {}, 1);

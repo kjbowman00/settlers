@@ -10,4 +10,11 @@ export class PlayerState {
         this.username = username;
         this.color = color;
     }
+
+    static validate(o: any) {
+        return typeof(o) === 'object' &&
+            typeof(o.id) === 'string' &&
+            typeof(o.username) === 'string' &&
+            typeof(o.color) === 'string';
+    }
 }

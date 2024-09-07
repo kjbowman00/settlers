@@ -18,6 +18,11 @@ export class ServerSocketMessage implements IServerSocketMessage {
         this.messageType = messageType;
         this.payload = payload;
     }
+
+    static validate(o: any) {
+        return typeof(o) === 'object' &&
+            typeof(o.responseID) === 'number' &&
+            typeof(o.messageType) === 'number' &&
+            typeof(o.payload) === 'object';
+    }
 }
-export const ServerSocketMessageRef = new ServerSocketMessage(0, 
-    ServerMessageType.CREATE_LOBBY_RESULT, new Object());

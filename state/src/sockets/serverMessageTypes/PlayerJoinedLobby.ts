@@ -11,5 +11,9 @@ export class PlayerJoinedLobby implements IPlayerJoinedLobby{
         this.player = player;
     }
 
+    static validate(o: any) {
+        return typeof(o) === 'object' &&
+            typeof(o.player) === 'object' &&
+            PlayerState.validate(o.player);
+    }
 }
-export const PlayerJoinedLobbyRef = new PlayerJoinedLobby(new PlayerState('','',''));

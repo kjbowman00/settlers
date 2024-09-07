@@ -5,5 +5,7 @@ export interface IStartGame {
 
 export class StartGame implements IStartGame {
 
+    static validate(o: any) {
+        return true;
+    }
 }
-export const StartGameRef = new StartGame();

@@ -13,5 +13,9 @@ export class UpdatePlayer implements IUpdatePlayer {
         this.username = username;
         this.color = color;
     }
+
+    static validate(o: any) {
+        return typeof(o.username) === 'string' &&
+            typeof(o.color) === 'string';
+    }
 }
-export const UpdatePlayerRef = new UpdatePlayer('', '');

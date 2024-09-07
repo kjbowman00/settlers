@@ -5,5 +5,8 @@ export interface ICreateLobby {
 
 export class CreateLobby implements ICreateLobby {
 
+
+    static validate(o: any) {
+        return true;
+    }
 }
-export const CreateLobbyRef = new CreateLobby();

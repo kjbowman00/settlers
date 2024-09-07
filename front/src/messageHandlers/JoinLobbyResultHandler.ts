@@ -1,6 +1,5 @@
-import { JoinLobby, JoinLobbyRef } from "../../../state/src/sockets/clientMessageTypes/JoinLobby";
-import { JoinLobbyResult, JoinLobbyResultRef } from "../../../state/src/sockets/serverMessageTypes/JoinLobbyResult";
-import { isValid } from "../../../state/src/sockets/Validator";
+import { JoinLobby } from "../../../state/src/sockets/clientMessageTypes/JoinLobby";
+import { JoinLobbyResult } from "../../../state/src/sockets/serverMessageTypes/JoinLobbyResult";
 import { MenuManager } from "../components/MenuManager";
 
 export class JoinLobbyResultHandler {
@@ -11,10 +10,7 @@ export class JoinLobbyResultHandler {
     }
 
     handle(data: any, waitingMessage: object | undefined) {
-        console.log("HANDLING");
-        if ( ! isValid(data, JoinLobbyResultRef) ) return;
-        if ( ! isValid(waitingMessage, JoinLobbyRef)) return;
-        console.log("WAS VALID");
+        if ( ! JoinLobbyResult.validate(data) ) return;
 
         const joinLobbyResult = data as JoinLobbyResult;
         if (! joinLobbyResult.success) return; //TODO: set to main menu maybe?
@@ -23,9 +19,16 @@ export class JoinLobbyResultHandler {
 
         console.log("HELLO");
 
+        // Update internal state
+        
         // Update menu to show lobby
+        const players = joinLobbyResult.players;
+        const playerNames = [];
+        for (const player of players) {
+            playerNames.push(player.username);
+        }
+        this.menuManager.lobbyMenu.setPlayersNamesDisplay(playerNames);
         this.menuManager.lobbyMenu.setLobbyNameDisplay(joinLobbyReq.lobbyID);
-        this.menuManager.lobbyMenu.setPlayersNamesDisplay([]);
         this.menuManager.switchToLobbyMenu();
     }
 }

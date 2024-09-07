@@ -1,5 +1,4 @@
-import { CreateLobby, CreateLobbyRef } from "../../../state/src/sockets/clientMessageTypes/CreateLobby";
-import { isValid } from "../../../state/src/sockets/Validator";
+import { CreateLobby } from "../../../state/src/sockets/clientMessageTypes/CreateLobby";
 import { LobbiesData } from "../dataHolders/LobbiesData";
 import { UserData } from "../dataHolders/UserData";
 import { CreateLobbyResult } from '../../../state/src/sockets/serverMessageTypes/CreateLobbyResult';
@@ -19,7 +18,7 @@ export class CreateLobbyHandler {
     }
 
     handle(o: Object, senderUUID: string) {
-        if (!isValid(o, CreateLobbyRef)) return;
+        if ( ! CreateLobby.validate(o) ) return;
         const req = o as CreateLobby;
         console.log("WE HERE");
         
