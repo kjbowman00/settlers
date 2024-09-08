@@ -1,5 +1,8 @@
 
 class CanValidate {
+    constructor(...args: any[]) {
+        // This is here to allow any potential inheritors have arbitrary constructors
+    }
     static validate(o: any): boolean {
         return false;
     }
@@ -36,9 +39,11 @@ export function validateType(o: any, ...args: types[]) {
             // Array validation
             if (! Array.isArray(o)) return false;
             for (const element of o) {
+                let atLeastOneInnerTypeValid = false;
                 for (const possibleInnerArrayType of possibleType) {
-                    if (!validateType(o, possibleType)) return false;
+                    if (validateType(element, possibleInnerArrayType)) atLeastOneInnerTypeValid = true;
                 }
+                if (! atLeastOneInnerTypeValid) return false;
             }
             return true;
         }
