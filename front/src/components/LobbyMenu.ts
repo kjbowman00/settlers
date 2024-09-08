@@ -1,7 +1,6 @@
 import { AbstractMenuContainer } from "./AbstractMenuContainer";
 import { MenuManager } from "./MenuManager";
-import { StateUpdate, StateUpdateType } from "../state/StateUpdate";
-import { MenuStateUpdate, MenuStateUpdateType } from "../state/MenuState";
+import { MenuStateUpdate, MenuStateUpdateType } from "../../../state/src/state/MenuState";
 
 export class LobbyMenu extends AbstractMenuContainer {
     lobbyMenu: HTMLElement;
@@ -25,16 +24,11 @@ export class LobbyMenu extends AbstractMenuContainer {
             navigator.clipboard.writeText(origin + "?lobbyName=" + this.lobbyName);
         }
 
-        document.getElementById("TEMP_BUTTON")!.onclick = () => {
-            menuManager.websocketConnector.sendMessage("HELLO WORLD");
-        }
-
         document.getElementById("lobby_start_game_button")!.onclick = () => {
             menuManager.switchToGame();
 
-            const menuUpdate = new MenuStateUpdate(MenuStateUpdateType.START_GAME);
-            const update = new StateUpdate(menuUpdate, StateUpdateType.MENU_STATE_UPDATE, null);
-            this.menuManager.appSync.publish(update);
+            //TODO:
+
         }
     }
 
@@ -52,10 +46,16 @@ export class LobbyMenu extends AbstractMenuContainer {
     }
 
     updateFromState() {
-        const players = this.menuManager.stateUpdateController.fullState.lobbyState.players;
+        const lobbyState = this.menuManager.state;
+
+        // Update lobby name
+        this.setLobbyNameDisplay(lobbyState!.lobbyId);
+
+        // Update player list display
+        const players = lobbyState!.players;
         const playersNames = [];
         for (const player of players) {
-            playersNames.push(player.playerName);
+            playersNames.push(player.username);
         }
         this.setPlayersNamesDisplay(playersNames);
     }

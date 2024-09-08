@@ -1,8 +1,8 @@
 import { AppSync } from "../components/AWSAppSync";
 import { MenuManager } from "../components/MenuManager";
-import { FullState } from "./FullState";
+import { FullState } from "../../../state/src/state/FullState";
 import { Game } from "./Game";
-import { IMenuStateUpdate, MenuStateUpdateType } from "./MenuState";
+import { IMenuStateUpdate, MenuStateUpdateType } from "../../../state/src/state/MenuState";
 import { IRoadHouseStateUpdate } from "./RoadHouseStateUpdate";
 import { IStateUpdate, StateUpdate, StateUpdateType } from "./StateUpdate";
 import { ILobbyState } from "./lobby/LobbyState";

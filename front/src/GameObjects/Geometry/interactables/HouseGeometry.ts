@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { colorGeometry, colorGeometryThree } from '../../../utility/ThreeUtils';
-import { RoadHouseState, getXZPosition } from '../../../state/RoadHouseState';
-import { PositionStateType } from '../../../state/PositionState';
+import { RoadHouseState, getXZPosition } from '../../../../../state/src/state/RoadHouseState';
+import { PositionStateType } from '../../../../../state/src/state/PositionState';
 import { GameObject } from '../../GameObject';
 
 /**

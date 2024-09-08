@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three';
-import { TileType } from '../utility/Tile';
+import { TileType } from '../../../front/src/utility/Tile';
 import { PositionState, PositionStateType } from './PositionState';
-import { GameWorld } from '../three/GameWorld';
+import { GameWorld } from '../../../front/src/three/GameWorld';
 
 
 /**
@@ -544,6 +544,21 @@ export class RoadHouseState {
 
     getArray() {
         return this.stateArray;
+    }
+    width: number;
+
+    height: number;
+
+    depth: number;
+
+    stateArray: PositionState[][][];
+
+    tileTypes: TileType[][];
+
+    validate(o: any): boolean {
+        return typeof(o) !== 'undefined' &&
+            typeof(o.width) === 'number' &&
+            
     }
 
 }

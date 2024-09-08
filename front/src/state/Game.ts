@@ -10,14 +10,14 @@ import { WheatField } from '../GameObjects/Geometry/terrain/Wheat';
 import { ZigguratGeometry } from '../GameObjects/Geometry/terrain/ZigguratGeometry';
 import { CameraController } from '../GameObjects/logic/CameraController';
 import { Lighting } from '../GameObjects/misc/Lighting';
-import { RoadHouseState, getXZPosition } from './RoadHouseState';
-import { FullState } from './FullState';
-import { PositionState, PositionStateType } from './PositionState';
+import { RoadHouseState, getXZPosition } from '../../../state/src/state/RoadHouseState';
+import { PositionState, PositionStateType } from '../../../state/src/state/PositionState';
 import { HouseUI } from '../UI/HouseUI';
 import { AppSync } from '../components/AWSAppSync';
 import { IRoadHouseStateUpdate, RoadHouseStateUpdate } from './RoadHouseStateUpdate';
 import { StateUpdate, StateUpdateType } from './StateUpdate';
 import { StateUpdateController } from './StateUpdateController';
+import { GameState } from '../../../state/src/state/GameState';
 
 export class Game {
     world: GameWorld;
@@ -29,17 +29,16 @@ export class Game {
     oceanWater: OceanWater;
     oceanFloor: OceanFloor;
     wheatField: WheatField;
-    roadHouseState: RoadHouseState;
     highlightedHousePlacementGeometry: HighlightedHousePlacementGeometry;
     cameraControls: CameraController;
-    stateUpdateController: StateUpdateController;
 
     houseUI: HouseUI;
 
+    gameState: GameState;
+
     constructor(scene: Scene, initialCameraAspectRatio: number, canvas: HTMLCanvasElement,
-        initialGameState: FullState, stateUpdateController: StateUpdateController) {
-        this.stateUpdateController = stateUpdateController;
-        stateUpdateController.setGame(this);
+        initialGameState: GameState) {
+        this.gameState = initialGameState;
         this.world = new GameWorld(scene);
 
         const tileState = initialGameState.tileState

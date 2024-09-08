@@ -1,4 +1,4 @@
-import { TileType } from "../utility/Tile";
+import { TileType } from "../../../front/src/utility/Tile";
 
 export class TileState {
     tileTypes: TileType[][];

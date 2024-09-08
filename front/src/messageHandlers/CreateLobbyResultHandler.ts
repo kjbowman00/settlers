@@ -20,11 +20,11 @@ export class CreateLobbyResultHandler {
         if ( ! createLobbyResult.success) return;
 
         const createLobbyReq = waitingMsg as CreateLobby;
-        //TODO: createLobbyReq.name
+
+        // Update the state
+        this.menuManager.lobbyState = createLobbyResult.initialLobbyState;
         
-        // Update menu to show lobby
-        this.menuManager.lobbyMenu.setLobbyNameDisplay(createLobbyResult.lobbyID);
-        this.menuManager.lobbyMenu.setPlayersNamesDisplay(['your_name_here']);
-        this.menuManager.switchToLobbyMenu();
+        // Update menu to match new state
+        this.menuManager.lobbyMenu.updateFromState();
     }
 }

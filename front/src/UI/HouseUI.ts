@@ -1,4 +1,4 @@
-import { PositionStateType } from '../state/PositionState';
+import { PositionStateType } from '../../../state/src/state/PositionState';
 import { GamePlacingHouseState } from '../state/state_machine/GamePlacingHouseState';
 import { GameWaitingState } from '../state/state_machine/GameWaitingState';
 import { GameYourTurnState } from '../state/state_machine/GameYourTurnState';

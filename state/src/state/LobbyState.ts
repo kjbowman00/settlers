@@ -5,6 +5,7 @@ import { GameStarted } from "../sockets/serverMessageTypes/GameStarted";
 import { TurnStarted } from "../sockets/serverMessageTypes/TurnStarted";
 import { ServerSocketMessage } from "../sockets/ServerSocketMessage";
 import { ServerMessageType } from "../sockets/ServerMessageType";
+import { GameState } from "./GameState";
 
 const DEFAULT_TURN_LENGTH_MILLI = 1000;
 
@@ -17,13 +18,9 @@ export class LobbyState {
     fullTurnLengthMilliseconds: number;
 
     isPlaying: boolean; // Whether or not the game is in the menu or playing state
+    gameState: GameState | undefined; // Undefined if not in game yet
 
-    userData: UserData;
     activeTurnUserIndex: number;
-    activeTurnTimer: NodeJS.Timeout | undefined;
-
-    // roadHouseState: RoadHouseState;
-    // materialsState: MaterialsState;
 
     constructor(hostPlayerData: PlayerState, userData: UserData) {
         this.lobbyId = randomUUID();
@@ -33,87 +30,32 @@ export class LobbyState {
         this.fullTurnLengthMilliseconds = DEFAULT_TURN_LENGTH_MILLI;
         this.isPlaying = false;
 
-        this.userData = userData;
         this.activeTurnUserIndex = -1;
-
     }
 
-    addPlayer(player: PlayerState) {
-        this.players.push(player);
-    }
-
-    removePlayer(playerId: string) {
-        let idx = -1;
-        let i = 0;
-        for (const playerData of this.players) {
-            if (playerData.id == playerId) {
-                idx = i;
-                break;
-            }
-            i++;
+    validate(o: any): boolean {
+        let valid = typeof(o) === 'object' &&
+            typeof(o.lobbyId) == 'string' &&
+            Array.isArray(o.players);
+        for (const player of o.players) {
+            valid = valid &&
+                typeof(player) === 'object' &&
+                PlayerState.validate(player);
         }
-        if (idx == -1) return;
-        this.players.splice(idx, 1);
-    }
-
-    startGame() {
-        if (this.isPlaying) return;
-        this.isPlaying = true;
-        this.activeTurnUserIndex = 0;
-
-        const msg = new GameStarted(
-            new TurnStarted(this.players[0].id),
-            {},
-            Math.random()
-        );
-        this.notifyPlayers(msg, ServerMessageType.GAME_STARTED);
-        this.activeTurnTimer = setTimeout(this.startNextTurn, this.fullTurnLengthMilliseconds);
-    }
-
-    endTurnRequest(userId: string) {
-        console.log("HEREHEREHERE");
-        console.log(userId);
-        console.log(this.players);
-        console.log(this.activeTurnUserIndex);
-        if ( ! this.isPlaying) return;
-        if(userId !== this.players[this.activeTurnUserIndex].id) return;
-
-        this.startNextTurn();
-    }
-
-    private startNextTurn() {
-        console.log("NEXT");
-        if (this.activeTurnTimer != undefined) {
-            clearTimeout(this.activeTurnTimer);
+        valid = valid &&
+            typeof(o.hostPlayerid) === 'string' &&
+            (typeof(o.currentTurnPlayerId) === 'string' || typeof(o.currentTurnPlayerId === 'undefined')) &&
+            typeof(o.currentTurnTimerMilliseconds) === 'number' &&
+            typeof(o.fullTurnLengthMilliseconds) === 'number' &&
+            typeof(o.isPlaying) === 'boolean' &&
+            (typeof(o.gameState) === 'object' || typeof(o.gameState) === 'undefined');
+        if (typeof(o.gameState) === 'object') {
+            valid = valid && GameState.validate(o.gameState);
         }
-
-        this.activeTurnUserIndex++;
-        let idx = this.activeTurnUserIndex;
-        if (idx >= this.players.length) {
-            this.activeTurnUserIndex = 0;
-            idx = 0;
-        }
-
-        const msg = new TurnStarted(this.players[idx].id);
-
-        this.notifyPlayers(msg, ServerMessageType.TURN_STARTED);
-        this.activeTurnTimer = setTimeout(this.startNextTurn, this.fullTurnLengthMilliseconds);
+        valid = valid &&
+            typeof(o.activeTurnUserIndex) === 'number';
+        return valid;
     }
+    
 
-    private notifyPlayers(msg: Object, msgType: ServerMessageType) {
-        const serverMsg = new ServerSocketMessage(
-            0, msgType, msg
-        );
-        const json = JSON.stringify(serverMsg);
-        for (const player of this.players) {
-            const socket = this.userData.uuidToSocket.get(player.id);
-            if (socket != undefined) {
-                socket.send(json);
-            }
-        }
-    }
-
-    shutdown() {
-        clearTimeout(this.activeTurnTimer);
-    }
 }

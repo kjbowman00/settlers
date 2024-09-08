@@ -13,6 +13,7 @@ import { WebsocketController } from "./WebsocketController";
 import { SocketMessageHandler } from "./SocketMessageHandler";
 import { JoinLobby } from "../../../state/src/sockets/clientMessageTypes/JoinLobby";
 import { ClientMessageType } from "../../../state/src/sockets/ClientMessageType";
+import { LobbyState } from "../../../state/src/state/LobbyState";
 
 export class MenuManager {
     mainMenu: MainMenu;
@@ -21,6 +22,7 @@ export class MenuManager {
     loadingMenu: LoadingMenu;
 
     socketMessageHandler: SocketMessageHandler;
+    state: LobbyState | undefined; // Undefined if haven't joined a lobby yet
 
     constructor() {
         this.mainMenu = new MainMenu(this);
@@ -58,7 +60,7 @@ export class MenuManager {
     switchToGame() {
         this.hideAll();
         this.gameBox.show();
-        // ThreeJSCanvas(this.stateUpdateController.fullState, this.stateUpdateController);
+        ThreeJSCanvas(this.stateUpdateController.fullState, this.stateUpdateController);
     }
 
     hideAll() {

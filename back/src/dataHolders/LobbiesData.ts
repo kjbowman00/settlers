@@ -2,10 +2,11 @@ import { randomUUID } from "crypto";
 import { LobbyState } from "../../../state/src/state/LobbyState";
 import { PlayerState } from "../../../state/src/state/PlayerState";
 import { UserData } from "./UserData";
+import { LobbyData } from "./LobbyData";
 
 export class LobbiesData {
     playerIdToLobbyId: Map<string, string>;
-    lobbyIdToLobbyData: Map<string, LobbyState>; 
+    lobbyIdToLobbyData: Map<string, LobbyData>; 
     userData: UserData;
 
     constructor(userData: UserData) {
@@ -14,16 +15,18 @@ export class LobbiesData {
         this.userData = userData;
     }
 
-    createLobby(firstPlayer: PlayerState): string {
+    createLobby(firstPlayer: PlayerState): LobbyData {
         // Remove from old lobby if player was in one
         this.removePlayer(firstPlayer.id);
 
-        const lobby = new LobbyState(firstPlayer, this.userData);
-        const lobbyId = lobby.lobbyId;
+        const lobbyState = new LobbyState(firstPlayer, this.userData);
+        const lobbyId = lobbyState.lobbyId;
+
+        const lobby = new LobbyData(lobbyState);
 
         this.lobbyIdToLobbyData.set(lobbyId, lobby);
         this.playerIdToLobbyId.set(firstPlayer.id, lobbyId);
-        return lobbyId;
+        return lobby;
     }
 
     joinLobby(player: PlayerState, lobbyId: string): boolean {
@@ -39,7 +42,7 @@ export class LobbiesData {
     getLobbyDataFromPlayer(playerId: string): undefined | LobbyState {
         const lobbyId = this.playerIdToLobbyId.get(playerId);
         if (lobbyId == undefined) return undefined;
-        return this.lobbyIdToLobbyData.get(lobbyId);
+        return this.lobbyIdToLobbyData.get(lobbyId)?.lobbyState;
     }
 
     private removePlayer(uuid: string) {
@@ -50,7 +53,7 @@ export class LobbiesData {
         const lobby = this.lobbyIdToLobbyData.get(lobbyId);
         if (lobby == undefined) return;
         lobby.removePlayer(uuid);
-        if (lobby.players.length == 0) {
+        if (lobby.lobbyState.players.length == 0) {
             this.removeLobby(lobbyId);
         }
     }
@@ -59,7 +62,7 @@ export class LobbiesData {
         const lobby = this.lobbyIdToLobbyData.get(lobbyId);
         if (lobby == undefined) return;
 
-        for (const player of lobby.players) {
+        for (const player of lobby.lobbyState.players) {
             this.playerIdToLobbyId.delete(player.id);
         }
 

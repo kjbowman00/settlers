@@ -1,4 +1,4 @@
-import { PositionStateType } from "./PositionState";
+import { PositionStateType } from "../../../state/src/state/PositionState";
 
 export interface IRoadHouseStateUpdate {
     i: number;

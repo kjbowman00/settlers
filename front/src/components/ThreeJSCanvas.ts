@@ -4,7 +4,7 @@ import {
     WebGLRenderer,
 } from 'three';
 import { Game } from '../state/Game';
-import { FullState } from '../state/FullState';
+import { FullState } from '../../../state/src/state/FullState';
 import { AppSync } from './AWSAppSync';
 import { StateUpdateController } from '../state/StateUpdateController';
 

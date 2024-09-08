@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { TerrainGeometry } from "../terrain/TerrainGeometry";
 import { colorGeometry } from "../../../utility/ThreeUtils";
-import { PositionState, PositionStateType } from "../../../state/PositionState";
+import { PositionState, PositionStateType } from "../../../../../state/src/state/PositionState";
 import { GameObject } from "../../GameObject";
 import { Game } from "../../../state/Game";
 import { RoadHouseStateUpdate } from "../../../state/RoadHouseStateUpdate";

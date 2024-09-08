@@ -1,20 +1,17 @@
+import { LobbyState } from "../../state/LobbyState";
 
-export interface ICreateLobbyResult {
-    success: boolean;
-    lobbyID: string;
-}
-
-export class CreateLobbyResult implements ICreateLobbyResult {
-    lobbyID: string;
+export class CreateLobbyResult {
+    initialLobbyState: LobbyState;
     success: boolean;
 
-    constructor(success: boolean, lobbyID: string) {
+    constructor(success: boolean, initialLobbyState: LobbyState) {
         this.success = success;
-        this.lobbyID = lobbyID;
     }
 
     static validate(o: any) {
-        return typeof(o.lobbyID) === 'string' &&
-            typeof(o.success) === 'boolean';
+        return typeof(o) !== 'undefined' &&
+            typeof(o.success) === 'boolean' &&
+            typeof(o.initialLobbyState) === 'object' &&
+            LobbyState.validate(o.initialLobbyState);
     }
 }
