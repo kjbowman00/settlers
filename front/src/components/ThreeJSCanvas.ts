@@ -4,12 +4,11 @@ import {
     WebGLRenderer,
 } from 'three';
 import { Game } from '../state/Game';
-import { FullState } from '../../../state/src/state/FullState';
-import { AppSync } from './AWSAppSync';
 import { StateUpdateController } from '../state/StateUpdateController';
+import { GameState } from '../../../state/src/state/GameState';
 
 
-export function ThreeJSCanvas(initialGameState: FullState, stateUpdateController: StateUpdateController) {
+export function ThreeJSCanvas(initialGameState: GameState) {
     const canvas:HTMLCanvasElement  = document.querySelector(`canvas#${"scene"}`)!
     let requestId:number;
 
@@ -36,7 +35,7 @@ export function ThreeJSCanvas(initialGameState: FullState, stateUpdateController
 
     // Create the actual game state
     const cameraAspectRatio = canvas.clientWidth / canvas.clientHeight;
-    const game = new Game(scene, cameraAspectRatio, canvas, initialGameState, stateUpdateController);
+    const game = new Game(scene, cameraAspectRatio, canvas, initialGameState);
 
     let lastFrameTime = 0;
     const animate = (timestamp:number) => {

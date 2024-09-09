@@ -13,7 +13,7 @@ import { WebsocketController } from './WebsocketController';
 export class SocketMessageHandler {
     //Handlers
     createLobbyResultHandler;
-    gameStartedHandler = new GameStartedHandler();
+    gameStartedHandler;
     joinLobbyResultHanlder; 
     playerJoinedLobbyHandler;
     turnStartedHandler = new TurnStartedHandler();
@@ -28,6 +28,7 @@ export class SocketMessageHandler {
         this.createLobbyResultHandler = new CreateLobbyResultHandler(menuManager);
         this.joinLobbyResultHanlder = new JoinLobbyResultHandler(menuManager);
         this.playerJoinedLobbyHandler = new PlayerJoinedLobbyHandler(menuManager);
+        this.gameStartedHandler = new GameStartedHandler(menuManager);
     }
     
     send(msg: object, msgType: ClientMessageType, responseExpected: boolean) {

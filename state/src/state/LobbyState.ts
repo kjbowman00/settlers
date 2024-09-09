@@ -7,7 +7,7 @@ import { ServerMessageType } from "../sockets/ServerMessageType";
 import { GameState } from "./GameState";
 import { validateType } from '../sockets/Validator';
 
-const DEFAULT_TURN_LENGTH_MILLI = 1000;
+const DEFAULT_TURN_LENGTH_MILLI = 60000;
 
 export class LobbyState {
     lobbyId: string;

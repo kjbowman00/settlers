@@ -22,6 +22,9 @@ export class CreateLobbyResultHandler {
 
         // Update the state
         this.menuManager.state = createLobbyResult.initialLobbyState;
+        console.log("YO YO YO YO");
+        console.log(this.menuManager.state);
+        console.log(createLobbyResult);
         
         // Update menu to match new state
         this.menuManager.lobbyMenu.updateFromState();

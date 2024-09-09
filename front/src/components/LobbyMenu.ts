@@ -1,6 +1,8 @@
 import { AbstractMenuContainer } from "./AbstractMenuContainer";
 import { MenuManager } from "./MenuManager";
 import { MenuStateUpdate, MenuStateUpdateType } from "../../../state/src/state/MenuState";
+import { StartGame } from "../../../state/src/sockets/clientMessageTypes/StartGame";
+import { ClientMessageType } from "../../../state/src/sockets/ClientMessageType";
 
 export class LobbyMenu extends AbstractMenuContainer {
     lobbyMenu: HTMLElement;
@@ -25,10 +27,8 @@ export class LobbyMenu extends AbstractMenuContainer {
         }
 
         document.getElementById("lobby_start_game_button")!.onclick = () => {
-            menuManager.switchToGame();
-
-            //TODO:
-
+            menuManager.switchToLoading();
+            menuManager.socketMessageHandler.send(new StartGame(), ClientMessageType.START_GAME, false);
         }
     }
 

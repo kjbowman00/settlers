@@ -51,7 +51,8 @@ export class LobbyData {
             Math.random()
         );
         this.notifyPlayers(msg, ServerMessageType.GAME_STARTED);
-        this.activeTurnTimer = setTimeout(this.startNextTurn, this.lobbyState.fullTurnLengthMilliseconds);
+        this.activeTurnTimer = setTimeout(() => {
+            this.startNextTurn}, this.lobbyState.fullTurnLengthMilliseconds);
     }
 
     endTurnRequest(userId: string) {

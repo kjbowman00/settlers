@@ -28,16 +28,17 @@ export class JoinLobbyHandler {
 
         // Send success message
         const socket = this.userData.uuidToSocket.get(senderUUID);
-        const lobby = this.lobbiesData.lobbyIdToLobbyData.get(req.lobbyID)!;
+        const lobby = this.lobbiesData.lobbyIdToLobbyData.get(req.lobbyID);
 
         if (socket != undefined) {
             const res = new ServerSocketMessage(
                 msgNumber, ServerMessageType.JOIN_LOBBY_RESULT, 
-                new JoinLobbyResult(success, lobby.lobbyState));
+                new JoinLobbyResult(success, lobby?.lobbyState));
             socket.send(JSON.stringify(res));
         }
 
         if (!success) return;
+        if (!lobby) return;
         // Send joined message to all other users in lobby
         for (const player of lobby.lobbyState.players) {
             if (player.id != senderUUID) {

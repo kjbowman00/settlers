@@ -4,9 +4,9 @@ import { validateType } from "../Validator";
 
 export class JoinLobbyResult {
     success: boolean;
-    currentLobbyState: LobbyState;
+    currentLobbyState: LobbyState | undefined;
 
-    constructor(success: boolean, currentLobbyState: LobbyState) {
+    constructor(success: boolean, currentLobbyState: LobbyState | undefined) {
         this.success = success;
         this.currentLobbyState = currentLobbyState;
     }
@@ -14,7 +14,7 @@ export class JoinLobbyResult {
     static validate(_o: any) {
         const o = _o as JoinLobbyResult;
         return validateType(o, 'object') &&
-            validateType(o.currentLobbyState, LobbyState) &&
+            validateType(o.currentLobbyState, LobbyState, 'undefined') &&
             validateType(o.success, 'boolean');
     }
 }

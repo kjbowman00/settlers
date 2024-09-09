@@ -42,6 +42,10 @@ export class MenuManager {
         }
     }
 
+    initializeState(state: LobbyState) {
+        this.state = state;
+    }
+
     switchToMainMenu() {
         this.hideAll();
         this.mainMenu.show();
@@ -60,7 +64,7 @@ export class MenuManager {
     switchToGame() {
         this.hideAll();
         this.gameBox.show();
-        ThreeJSCanvas(this.stateUpdateController.fullState, this.stateUpdateController);
+        ThreeJSCanvas(this.state!.gameState!);
     }
 
     hideAll() {

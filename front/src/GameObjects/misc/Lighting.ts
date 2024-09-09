@@ -1,4 +1,4 @@
-import { AmbientLight, PointLight } from "three";
+import { AmbientLight, DirectionalLight, PointLight } from "three";
 import { GameObject } from "../GameObject";
 
 export class Lighting extends GameObject {
