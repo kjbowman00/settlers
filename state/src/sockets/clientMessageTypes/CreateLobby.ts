@@ -1,12 +1,18 @@
-
-export interface ICreateLobby {
-    // In the future, we will pass lobby settings here. World size, player limit, etc.
-}
-
-export class CreateLobby implements ICreateLobby {
+import { PlayerState } from "../../state/PlayerState";
+import { validateType } from "../Validator";
 
 
-    static validate(o: any) {
-        return true;
+export class CreateLobby {
+    player: PlayerState;
+
+    constructor(player: PlayerState) {
+        this.player = player;
+    }
+
+
+    static validate(_o: any) {
+        const o = _o as CreateLobby;
+        return validateType(o, 'object') &&
+            validateType(o.player, PlayerState);
     }
 }

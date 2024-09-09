@@ -8,6 +8,7 @@ import { JoinLobby } from "../../../../state/src/sockets/clientMessageTypes/Join
 import { ServerSocketMessage } from "../../../../state/src/sockets/ServerSocketMessage";
 import { PlayerJoinedLobby } from '../../../../state/src/sockets/serverMessageTypes/PlayerJoinedLobby';
 import { JoinLobbyResult } from "../../../../state/src/sockets/serverMessageTypes/JoinLobbyResult";
+import { PlayerState } from "../../../../state/src/state/PlayerState";
 
 test("Create and join lobby", () => {
     const socketHandler = new SocketMessageHandler();
@@ -20,7 +21,9 @@ test("Create and join lobby", () => {
 
     // -- Create Lobby --
     const createLobby = JSON.stringify(new ClientSocketMessage(
-        0, ClientMessageType.CREATE_LOBBY, new CreateLobby()
+        0, ClientMessageType.CREATE_LOBBY, new CreateLobby(
+            new PlayerState('', 'player', 'blue')
+        )
     ));
     socketHandler.onMessage(user1.id, createLobby);
     expect(user1.messages.length).toEqual(1);

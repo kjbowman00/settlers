@@ -22,7 +22,7 @@ export class CreateLobbyHandler {
         const req = o as CreateLobby;
         console.log("WE HERE");
         
-        const firstPlayer = new PlayerState(senderUUID, "USERNAME", "blue");
+        const firstPlayer = new PlayerState(senderUUID, req.player.username, req.player.color);
 
         const lobby = this.lobbiesData.createLobby(firstPlayer);
         console.log("YEAH");
