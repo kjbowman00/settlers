@@ -1,3 +1,4 @@
+import { validateType } from "../sockets/Validator";
 import { RoadHouseState } from "./RoadHouseState";
 import { TileState } from "./TileState";
 
@@ -19,13 +20,12 @@ export class GameState {
     }
 
 
-    validate(o: any): boolean {
-        return typeof(o) !== 'undefined' &&
-            typeof(o.roadHouseState) === 'object' &&
-            RoadHouseState.validate(o.roadHouseState) &&
-            typeof(o.tileState) === 'object' &&
-            TileState.validate(o.tileState) &&
-            typeof(o.seed) === 'number';
+    static validate(_o: any): boolean {
+        const o = _o as GameState;
+        return validateType(o, 'object') &&
+            validateType(o.roadHouseState, RoadHouseState) &&
+            validateType(o.tileState, TileState) &&
+            validateType(o.seed, 'number');
     }
 
 }

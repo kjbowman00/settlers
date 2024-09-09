@@ -14,7 +14,7 @@ export class PlayerJoinedLobbyHandler {
         const playerJoinedLobby = data as PlayerJoinedLobby;
         const player = playerJoinedLobby.player;
 
-        // this.menuManager.lobbyMenu.lobbyMenuPlayersNamesList
-        
+        this.menuManager.state?.players.push(player);
+        this.menuManager.lobbyMenu.updateFromState();
     }
 }

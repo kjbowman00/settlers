@@ -1,4 +1,4 @@
-import { TileType } from './Tile';
+import { TileType } from '../../../state/src/state/TileType';
 import { Hexagon } from './Hexagon';
 import { Noise } from './Noise';
 

@@ -24,7 +24,7 @@ export class CreateLobbyHandler {
         
         const firstPlayer = new PlayerState(senderUUID, "USERNAME", "blue");
 
-        const lobbyId = this.lobbiesData.createLobby(firstPlayer);
+        const lobby = this.lobbiesData.createLobby(firstPlayer);
         console.log("YEAH");
 
         // Send success message
@@ -32,7 +32,7 @@ export class CreateLobbyHandler {
         if (socket != undefined) {
             const res = new ServerSocketMessage(
                 0, ServerMessageType.CREATE_LOBBY_RESULT, new CreateLobbyResult(
-                    true, lobbyId
+                    true, lobby.lobbyState
                 )
             );
             socket.send(JSON.stringify(res));

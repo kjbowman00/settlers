@@ -84,4 +84,5 @@ export class Hexagon {
         if (dist > this.radius * 0.4) dist = this.radius * 0.4;
         return dist;
     }
+
 }

@@ -4,7 +4,7 @@ import { AppSync } from "./AWSAppSync";
 import { GameBox } from "./GameMenu";
 import { LobbyMenu } from "./LobbyMenu";
 import { MainMenu } from "./MainMenu";
-import { randomPlayerColor, randomPlayerName } from "../Utility/PlayerRandomizer";
+import { randomPlayerColor, randomPlayerName } from "../utility/PlayerRandomizer";
 import { ThreeJSCanvas } from "./ThreeJSCanvas";
 import { LoadingMenu } from "./LoadingMenu";
 import { StateUpdateController } from "../state/StateUpdateController";

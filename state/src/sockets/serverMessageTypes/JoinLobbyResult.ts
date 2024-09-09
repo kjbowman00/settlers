@@ -1,29 +1,20 @@
+import { LobbyState } from "../../state/LobbyState";
 import { PlayerState } from "../../state/PlayerState";
+import { validateType } from "../Validator";
 
 export class JoinLobbyResult {
     success: boolean;
-    lobbyID: string;
-    players: PlayerState[];
+    currentLobbyState: LobbyState;
 
-    constructor(success: boolean, lobbyID: string, players: PlayerState[]) {
+    constructor(success: boolean, currentLobbyState: LobbyState) {
         this.success = success;
-        this.lobbyID = lobbyID;
-        this.players = players;
+        this.currentLobbyState = currentLobbyState;
     }
 
-    static validate(o: any) {
-        let valid = typeof(o) === 'object' &&
-            typeof(o.success) === 'boolean' && 
-            typeof(o.lobbyID) === 'string' &&
-            typeof(o.players) === 'object' &&
-            Array.isArray(o.players);
-        if (valid) {
-            for (const item of o.players) {
-                valid = valid && 
-                    typeof(item) === 'object' &&
-                    PlayerState.validate(item);
-            }
-        }
-        return valid;
+    static validate(_o: any) {
+        const o = _o as JoinLobbyResult;
+        return validateType(o, 'object') &&
+            validateType(o.currentLobbyState, LobbyState) &&
+            validateType(o.success, 'boolean');
     }
 }

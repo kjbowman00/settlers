@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { Vec2 } from '../../../state/src/state/Vec2';
+import { Vec3 } from '../../../state/src/state/Vec3';
 
 /**
  * A collection of utility functions for THREE.js
@@ -46,4 +48,11 @@ export function getRGB255(color: THREE.Color): RGB255 {
     const g = clamp(Math.round(color.g * 255), 0, 255);
     const b = clamp(Math.round(color.b * 255), 0, 255);
     return new RGB255(r,g,b);
+}
+
+export function convertVec2(vec2: Vec2) {
+    return new THREE.Vector2(vec2.x, vec2.y);
+}
+export function convertVec3(vec3: Vec3) {
+    return new THREE.Vector3(vec3.x, vec3.y, vec3.z);
 }

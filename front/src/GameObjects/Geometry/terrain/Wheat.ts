@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
-import { Tile, TileType } from '../../../utility/Tile';
+import { Tile } from '../../../utility/Tile';
 import { RGB255, colorGeometry } from '../../../utility/ThreeUtils';
 import { GameObject } from '../../GameObject';
+import { TileType } from '../../../../../state/src/state/TileType';
 
 
 /**

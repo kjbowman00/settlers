@@ -1,7 +1,6 @@
 import { CreateLobby } from "../../../state/src/sockets/clientMessageTypes/CreateLobby";
 import { ClientSocketMessage } from "../../../state/src/sockets/ClientSocketMessage";
-import { CreateLobbyResult, CreateLobbyResultRef } from "../../../state/src/sockets/serverMessageTypes/CreateLobbyResult";
-import { isValid } from "../../../state/src/sockets/Validator";
+import { CreateLobbyResult } from "../../../state/src/sockets/serverMessageTypes/CreateLobbyResult";
 import { MenuManager } from "../components/MenuManager";
 
 export class CreateLobbyResultHandler {
@@ -22,9 +21,10 @@ export class CreateLobbyResultHandler {
         const createLobbyReq = waitingMsg as CreateLobby;
 
         // Update the state
-        this.menuManager.lobbyState = createLobbyResult.initialLobbyState;
+        this.menuManager.state = createLobbyResult.initialLobbyState;
         
         // Update menu to match new state
         this.menuManager.lobbyMenu.updateFromState();
+        this.menuManager.switchToLobbyMenu();
     }
 }

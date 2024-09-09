@@ -19,10 +19,10 @@ export class LobbiesData {
         // Remove from old lobby if player was in one
         this.removePlayer(firstPlayer.id);
 
-        const lobbyState = new LobbyState(firstPlayer, this.userData);
+        const lobbyState = new LobbyState(firstPlayer, this.userData, randomUUID());
         const lobbyId = lobbyState.lobbyId;
 
-        const lobby = new LobbyData(lobbyState);
+        const lobby = new LobbyData(lobbyState, this.userData);
 
         this.lobbyIdToLobbyData.set(lobbyId, lobby);
         this.playerIdToLobbyId.set(firstPlayer.id, lobbyId);
@@ -39,10 +39,10 @@ export class LobbiesData {
         return true;
     }
 
-    getLobbyDataFromPlayer(playerId: string): undefined | LobbyState {
+    getLobbyDataFromPlayer(playerId: string): undefined | LobbyData {
         const lobbyId = this.playerIdToLobbyId.get(playerId);
         if (lobbyId == undefined) return undefined;
-        return this.lobbyIdToLobbyData.get(lobbyId)?.lobbyState;
+        return this.lobbyIdToLobbyData.get(lobbyId);
     }
 
     private removePlayer(uuid: string) {

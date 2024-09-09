@@ -4,6 +4,7 @@ import { TurnStarted } from "../../../state/src/sockets/serverMessageTypes/TurnS
 import { ServerSocketMessage } from "../../../state/src/sockets/ServerSocketMessage";
 import { LobbyState } from "../../../state/src/state/LobbyState";
 import { PlayerState } from "../../../state/src/state/PlayerState";
+import { UserData } from "./UserData";
 
 
 export class LobbyData {
@@ -12,10 +13,12 @@ export class LobbyData {
 
     // Server only lobby data
     activeTurnTimer: NodeJS.Timeout | undefined;
+    userData: UserData;
 
 
-    constructor(lobbyState: LobbyState) {
+    constructor(lobbyState: LobbyState, userData: UserData) {
         this.lobbyState = lobbyState;
+        this.userData = userData;
     }
 
 
@@ -83,7 +86,7 @@ export class LobbyData {
         );
         const json = JSON.stringify(serverMsg);
         for (const player of this.lobbyState.players) {
-            const socket = this.lobbyState.userData.uuidToSocket.get(player.id);
+            const socket = this.userData.uuidToSocket.get(player.id);
             if (socket != undefined) {
                 socket.send(json);
             }

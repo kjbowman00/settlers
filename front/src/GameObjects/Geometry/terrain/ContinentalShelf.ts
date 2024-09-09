@@ -1,5 +1,5 @@
 import { Vector2, Vector3 } from 'three';
-import { TileType } from '../../../utility/Tile';
+import { TileType } from '../../../../../state/src/state/TileType';
 
 /**
  * Adds a trapezoid where v1 is the position of the top left corner and continues clockwise

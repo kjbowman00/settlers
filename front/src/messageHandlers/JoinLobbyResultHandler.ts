@@ -20,15 +20,10 @@ export class JoinLobbyResultHandler {
         console.log("HELLO");
 
         // Update internal state
+        this.menuManager.state = joinLobbyResult.currentLobbyState;
         
         // Update menu to show lobby
-        const players = joinLobbyResult.players;
-        const playerNames = [];
-        for (const player of players) {
-            playerNames.push(player.username);
-        }
-        this.menuManager.lobbyMenu.setPlayersNamesDisplay(playerNames);
-        this.menuManager.lobbyMenu.setLobbyNameDisplay(joinLobbyReq.lobbyID);
+        this.menuManager.lobbyMenu.updateFromState();
         this.menuManager.switchToLobbyMenu();
     }
 }

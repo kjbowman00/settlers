@@ -27,12 +27,14 @@ test("Create and join lobby", () => {
     let res = user1.messages[0] as ServerSocketMessage;
     const createLobbyRes = res.payload as CreateLobbyResult; 
     expect(createLobbyRes.success).toEqual(true);
-    expect(typeof createLobbyRes.lobbyID).toEqual('string');
+    const initialLobbyState = createLobbyRes.initialLobbyState;
+    expect(initialLobbyState.isPlaying).toBe(false);
+    expect(initialLobbyState.players[0].id).toBe(user1.id);
 
     // -- Join Lobby --
     const joinLobby = JSON.stringify(new ClientSocketMessage(
         0, ClientMessageType.JOIN_LOBBY, new JoinLobby(
-            createLobbyRes.lobbyID
+            createLobbyRes.initialLobbyState.lobbyId
         )
     ));
     socketHandler.onMessage(user2.id, joinLobby);

@@ -15,9 +15,10 @@ import { PositionState, PositionStateType } from '../../../state/src/state/Posit
 import { HouseUI } from '../UI/HouseUI';
 import { AppSync } from '../components/AWSAppSync';
 import { IRoadHouseStateUpdate, RoadHouseStateUpdate } from './RoadHouseStateUpdate';
-import { StateUpdate, StateUpdateType } from './StateUpdate';
 import { StateUpdateController } from './StateUpdateController';
 import { GameState } from '../../../state/src/state/GameState';
+import { Vec3 } from '../../../state/src/state/Vec3';
+import { convertVec2, convertVec3 } from '../utility/ThreeUtils';
 
 export class Game {
     world: GameWorld;
@@ -68,8 +69,7 @@ export class Game {
         this.wheatField = new WheatField(this.terrain.tiles);
         this.world.addGameObject(this.wheatField);
 
-        this.roadHouseState = initialGameState.roadHouseState;
-        this.houseGeometry = new HouseGeometry(this.roadHouseState, hexagonWorldRadius);
+        this.houseGeometry = new HouseGeometry(initialGameState.roadHouseState, hexagonWorldRadius);
         this.world.addGameObject(this.houseGeometry);
 
         this.highlightedHousePlacementGeometry = new HighlightedHousePlacementGeometry(this.terrain, this);
@@ -90,12 +90,12 @@ export class Game {
     }
 
     addHighlightedAreas(placementGoal: PositionStateType, detached: boolean) {
-        const indexLocations = this.roadHouseState.getPossiblePlacementLocations(placementGoal, detached, this.appSync.userID);
+        const indexLocations = this.gameState.roadHouseState.getPossiblePlacementLocations(placementGoal, detached, 'todo: username here');
         const locations: [THREE.Vector3, THREE.Vector2][] = [];
-        indexLocations.forEach((ijkVector: THREE.Vector3) => {
-            const worldPositionVector = getXZPosition(ijkVector.x, ijkVector.y, ijkVector.z, 
-                this.terrain.hexagonWorldRadius);
-            locations.push([ijkVector, worldPositionVector]);
+        indexLocations.forEach((ijkVector: Vec3) => {
+            const worldPositionVector = convertVec2(getXZPosition(ijkVector.x, ijkVector.y, ijkVector.z, 
+                this.terrain.hexagonWorldRadius));
+            locations.push([convertVec3(ijkVector), worldPositionVector]);
         });
         this.highlightedHousePlacementGeometry.updateLocations(locations, placementGoal);
     }
@@ -113,15 +113,15 @@ export class Game {
     placeRoadOrSettlement(idx: THREE.Vector3, placementGoal: PositionStateType) {
         const roadHouseStateUpdate = new RoadHouseStateUpdate(idx.x, idx.y, idx.z,
             "TODO_USERNAME_HERE",placementGoal);
-        const update = new StateUpdate(roadHouseStateUpdate, StateUpdateType.ROAD_HOUSE_STATE, null);
+        // const update = new StateUpdate(roadHouseStateUpdate, StateUpdateType.ROAD_HOUSE_STATE, null);
         // this.appSync.publish(update);
-        this.stateUpdateController.updateLocalData(update);
+        // this.stateUpdateController.updateLocalData(update);
     }
     serverRoadStateUpdate(update: IRoadHouseStateUpdate) {
         // const playerPlacing = this.appSync.menuManager.stateUpdateController.fullState.lobbyState.getPlayer(update.player);
         const playerPlacing = { playerID : "TODO"};
         const indexLocation = new THREE.Vector3(update.i, update.j, update.k);
-        this.roadHouseState.putState(indexLocation, update.placementGoal, playerPlacing!.playerID, playerPlacing!.playerColor);
+        // this.roadHouseState.putState(indexLocation, update.placementGoal, playerPlacing!.playerID, playerPlacing!.playerColor);
         this.houseGeometry.updateMeshes();
         this.highlightedHousePlacementGeometry.empty();
     }

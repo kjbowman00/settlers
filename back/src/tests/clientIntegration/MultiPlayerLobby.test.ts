@@ -41,7 +41,7 @@ beforeEach(()=> {
 
     const joinLobby = JSON.stringify(new ClientSocketMessage(
         0, ClientMessageType.JOIN_LOBBY, new JoinLobby(
-            createLobbyRes.lobbyID
+            createLobbyRes.initialLobbyState.lobbyId
         )
     ));
     socketHandler.onMessage(user2.id, joinLobby);

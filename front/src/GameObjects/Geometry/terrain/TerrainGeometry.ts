@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { Vector2, Vector3 } from 'three';
 import { addContinentalShelf } from './ContinentalShelf';
-import { Tile, TileType } from '../../../utility/Tile';
+import { Tile } from '../../../utility/Tile';
 import { GameObject } from '../../GameObject';
+import { TileType } from '../../../../../state/src/state/TileType';
 
 /**
  * Adds a triangle's vertex positions and vertex colors to the given arrays

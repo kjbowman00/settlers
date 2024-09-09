@@ -33,13 +33,13 @@ export class JoinLobbyHandler {
         if (socket != undefined) {
             const res = new ServerSocketMessage(
                 msgNumber, ServerMessageType.JOIN_LOBBY_RESULT, 
-                new JoinLobbyResult(success,lobby.lobbyId, lobby.players));
+                new JoinLobbyResult(success, lobby.lobbyState));
             socket.send(JSON.stringify(res));
         }
 
         if (!success) return;
         // Send joined message to all other users in lobby
-        for (const player of lobby.players) {
+        for (const player of lobby.lobbyState.players) {
             if (player.id != senderUUID) {
                 const msg = new ServerSocketMessage(
                     -1, ServerMessageType.PLAYER_JOINED_LOBBY, new PlayerJoinedLobby(

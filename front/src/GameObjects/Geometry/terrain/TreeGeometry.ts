@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { BufferGeometry, Vector3 } from 'three';
-import { Tile, TileType } from '../../../utility/Tile';
+import { Tile } from '../../../utility/Tile';
 import { Hexagon } from '../../../utility/Hexagon';
 import { GameObject } from '../../GameObject';
+import { TileType } from '../../../../../state/src/state/TileType';
 
 const TREE_RADIUS_HEXAGON_MULTIPLE = 0.1; // Tree radius multiple compared to hexagon radius
 const TREE_HEIGHT_HEXAGON_MULTIPLE = 0.2; // Tree height compared to hexagon radius

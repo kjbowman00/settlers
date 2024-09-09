@@ -1,13 +1,14 @@
-import { Vector2, Vector3 } from 'three';
-import { TileType } from '../../../front/src/utility/Tile';
 import { PositionState, PositionStateType } from './PositionState';
-import { GameWorld } from '../../../front/src/three/GameWorld';
+import { validateType } from '../sockets/Validator';
+import { Vec2 } from './Vec2';
+import { Vec3 } from './Vec3';
+import { TileType } from './TileType';
 
 
 /**
  * Computes world XZ coordinates for a hexagon corner.
  */
-export function getXZPosition(i:number, j:number, k:number, r: number): Vector2 {
+export function getXZPosition(i:number, j:number, k:number, r: number): Vec2 {
     // X calculation
     let kmod; // x offset from k=2 depending on k
     if (k === 0) {
@@ -40,78 +41,78 @@ export function getXZPosition(i:number, j:number, k:number, r: number): Vector2 
     }
     const y = startY + hexHeight*j + kmod;
 
-    return new Vector2(x,y);
+    return new Vec2(x,y);
 }
 
 
 /**
  * Given a corner of a hexagon that can hold a house, finds the 3 closest coordinates for other houses.
  */
-function getHousesOneAway(i:number, j:number, k:number): Vector3[] {
+function getHousesOneAway(i:number, j:number, k:number): Vec3[] {
     if (i % 2 === 0) {
         if (k === 0) {
             return [
-                new Vector3(i-1,j, 3),
-                new Vector3(i,j, 1),
+                new Vec3(i-1,j, 3),
+                new Vec3(i,j, 1),
             ];
         }
         if (k === 1) {
             return [
-                new Vector3(i-1, j, 3),
-                new Vector3(i-1, j+1, 3),
-                new Vector3(i, j, 3),
+                new Vec3(i-1, j, 3),
+                new Vec3(i-1, j+1, 3),
+                new Vec3(i, j, 3),
             ];
         }
         if (k === 2) {
             return [
-                new Vector3(i,j,1),
-                new Vector3(i,j,3),
+                new Vec3(i,j,1),
+                new Vec3(i,j,3),
             ];
         }
         if (k === 3) {
             return [
-                new Vector3(i, j, 1),
-                new Vector3(i+1, j, 1),
-                new Vector3(i+1, j+1, 1),
+                new Vec3(i, j, 1),
+                new Vec3(i+1, j, 1),
+                new Vec3(i+1, j+1, 1),
             ];
         }
         // k === 4
         return [
-            new Vector3(i,j,3),
-            new Vector3(i+1,j,1),
+            new Vec3(i,j,3),
+            new Vec3(i+1,j,1),
         ];
     }
     // odd i
     if (k === 0) {
         return [
-            new Vector3(i,j,1),
-            new Vector3(i-1,j-1,3),
+            new Vec3(i,j,1),
+            new Vec3(i-1,j-1,3),
         ];
     }
     if (k === 1) {
         return [
-            new Vector3(i-1, j, 3),
-            new Vector3(i-1, j-1, 3),
-            new Vector3(i, j, 3),
+            new Vec3(i-1, j, 3),
+            new Vec3(i-1, j-1, 3),
+            new Vec3(i, j, 3),
         ];
     }
     if (k === 2) {
         return [
-            new Vector3(i,j,1),
-            new Vector3(i,j,3),
+            new Vec3(i,j,1),
+            new Vec3(i,j,3),
         ];
     }
     if (k === 3) {
         return [
-            new Vector3(i, j, 1),
-            new Vector3(i+1, j, 1),
-            new Vector3(i+1, j-1, 1),
+            new Vec3(i, j, 1),
+            new Vec3(i+1, j, 1),
+            new Vec3(i+1, j-1, 1),
         ];
     }
     // k === 4
     return [
-        new Vector3(i,j,3),
-        new Vector3(i+1,j-1,1),
+        new Vec3(i,j,3),
+        new Vec3(i+1,j-1,1),
     ];
 
 }
@@ -121,84 +122,84 @@ function getHousesOneAway(i:number, j:number, k:number): Vector3[] {
  * Does NOT filter out positions that are out of bounds or invalid.
  * @return list of each road position as a vector3 where x=i, y=j, z=k
  */
-function getRoadsOneAway(i:number, j:number, k:number): Vector3[] {
+function getRoadsOneAway(i:number, j:number, k:number): Vec3[] {
     if (i % 2 === 0) {
         if (k === 0) {
             return [
-                new Vector3(i-1, j, 2),
-                new Vector3(i-1, j, 4),
-                new Vector3(i, j, 2),
-                new Vector3(i-1, j+1, 4),
+                new Vec3(i-1, j, 2),
+                new Vec3(i-1, j, 4),
+                new Vec3(i, j, 2),
+                new Vec3(i-1, j+1, 4),
             ];
         }
         if (k === 1) {
             return [
-                new Vector3(i, j, 0),
-                new Vector3(i, j, 2),
-                new Vector3(i-1, j+1, 4),
+                new Vec3(i, j, 0),
+                new Vec3(i, j, 2),
+                new Vec3(i-1, j+1, 4),
             ];
         }
         if (k === 2) {
             return [
-                new Vector3(i, j, 0),
-                new Vector3(i, j, 4),
-                new Vector3(i - 1, j + 1, 4),
-                new Vector3(i + 1, j + 1, 0),
+                new Vec3(i, j, 0),
+                new Vec3(i, j, 4),
+                new Vec3(i - 1, j + 1, 4),
+                new Vec3(i + 1, j + 1, 0),
             ];
         }
         if (k === 3) {
             return [
-                new Vector3(i, j, 2),
-                new Vector3(i, j, 4),
-                new Vector3(i+1, j+1, 0),
+                new Vec3(i, j, 2),
+                new Vec3(i, j, 4),
+                new Vec3(i+1, j+1, 0),
             ];
 
         }
         // k === 4
         return [
-            new Vector3(i,j, 2),
-            new Vector3(i + 1, j, 0),
-            new Vector3(i+1, j, 2),
-            new Vector3(i+1, j+1, 0),
+            new Vec3(i,j, 2),
+            new Vec3(i + 1, j, 0),
+            new Vec3(i+1, j, 2),
+            new Vec3(i+1, j+1, 0),
         ];
     }
     // odd i
     if (k === 0) {
         return [
-            new Vector3(i-1, j-1, 2),
-            new Vector3(i-1, j-1, 4),
-            new Vector3(i,j, 2),
-            new Vector3(i-1, j, 4),
+            new Vec3(i-1, j-1, 2),
+            new Vec3(i-1, j-1, 4),
+            new Vec3(i,j, 2),
+            new Vec3(i-1, j, 4),
         ];
     }
     if (k === 1) {
         return [
-            new Vector3(i, j, 0),
-            new Vector3(i, j, 2),
-            new Vector3(i-1, j, 4),
+            new Vec3(i, j, 0),
+            new Vec3(i, j, 2),
+            new Vec3(i-1, j, 4),
         ]; //
     }
     if (k === 2) {
         return [
-            new Vector3(i,j, 0),
-            new Vector3(i,j, 4),
-            new Vector3(i+1, j, 0),
-            new Vector3(i-1, j, 4),
+            new Vec3(i,j, 0),
+            new Vec3(i,j, 4),
+            new Vec3(i+1, j, 0),
+            new Vec3(i-1, j, 4),
         ];
     }
     if (k === 3) {
         return [
-            new Vector3(i, j, 2),
-            new Vector3(i, j, 4),
-            new Vector3(i+1, j, 0),
+            new Vec3(i, j, 2),
+            new Vec3(i, j, 4),
+            new Vec3(i+1, j, 0),
         ];
     }
     // k === 4
     return [
-        new Vector3(i,j, 2),
-        new Vector3(i+1, j, 0),
-        new Vector3(i+1, j-1, 0),
-        new Vector3(i+1, j-1, 2),
+        new Vec3(i,j, 2),
+        new Vec3(i+1, j, 0),
+        new Vec3(i+1, j-1, 0),
+        new Vec3(i+1, j-1, 2),
     ];
 
     return [];
@@ -208,72 +209,72 @@ function getRoadsOneAway(i:number, j:number, k:number): Vector3[] {
  * Finds which hexagon game tiles are surrounding an i,j,k coordinate. Returns coordinates, not actual tiles.
  * NOTE: May return coordinates that are out of bounds.
  */
-function getAdjacentTiles(i:number, j:number, k:number): Vector2[] {
+function getAdjacentTiles(i:number, j:number, k:number): Vec2[] {
     // Even i value tiles have different rules because of offset
     if (i % 2 === 0) {
         if (k === 0) {
             return [
-                new Vector2(i-2, j),
-                new Vector2(i-1, j-1),
+                new Vec2(i-2, j),
+                new Vec2(i-1, j-1),
             ];
         }
         if (k === 1) {
             return [
-                new Vector2(i-2, j),
-                new Vector2(i-1, j-1),
-                new Vector2(i-1, j),
+                new Vec2(i-2, j),
+                new Vec2(i-1, j-1),
+                new Vec2(i-1, j),
             ];
         }
         if (k === 2) {
             return [
-                new Vector2(i-1, j-1),
-                new Vector2(i-1, j),
+                new Vec2(i-1, j-1),
+                new Vec2(i-1, j),
             ];
         }
         if (k === 3) {
             return [
-                new Vector2(i-1, j-1),
-                new Vector2(i-1, j),
-                new Vector2(i, j),
+                new Vec2(i-1, j-1),
+                new Vec2(i-1, j),
+                new Vec2(i, j),
             ];
         }
         // k === 4
         return [
-            new Vector2(i-1, j-1),
-            new Vector2(i, j),
+            new Vec2(i-1, j-1),
+            new Vec2(i, j),
         ];
     }
     // odd i value
     if (k === 0) {
         return [
-            new Vector2(i-1, j-1),
-            new Vector2(i-2,j-1)
+            new Vec2(i-1, j-1),
+            new Vec2(i-2,j-1)
         ];
     }
     if (k === 1) {
         return [
-            new Vector2(i-1, j-1),
-            new Vector2(i-2,j-1),
-            new Vector2(i-1, j)
+            new Vec2(i-1, j-1),
+            new Vec2(i-2,j-1),
+            new Vec2(i-1, j)
         ];
     } 
     if (k === 2) {
         return [
-            new Vector2(i-1, j-1),
-            new Vector2(i-1, j)
+            new Vec2(i-1, j-1),
+            new Vec2(i-1, j)
         ];
     }
     if (k === 3) {
         return [
-            new Vector2(i-1, j-1),
-            new Vector2(i,j-1),
-            new Vector2(i-1, j)
+            new Vec2(i-1, j-1),
+            new Vec2(i,j-1),
+            new Vec2(i-1, j)
         ];
     }
     // k === 4
     return [
-        new Vector2(i-1, j-1),
-        new Vector2(i, j-1)
+        new Vec2(i-1, j-1),
+        new Vec2(i, j-1)
     ];
 }
 
@@ -286,7 +287,7 @@ function getAdjacentTiles(i:number, j:number, k:number): Vector2[] {
  * @param adjacentTilesParam Optional list of tiles adjacent to this point. Will be used for computation
  * @returns 
  */
-function isStatePositionInBounds(i:number, j:number, k:number, tileTypes:TileType[][], adjacentTilesParam?: Vector2[]) {
+function isStatePositionInBounds(i:number, j:number, k:number, tileTypes:TileType[][], adjacentTilesParam?: Vec2[]) {
     const w = tileTypes.length;
     const h = tileTypes[0].length;
 
@@ -306,7 +307,7 @@ function isStatePositionInBounds(i:number, j:number, k:number, tileTypes:TileTyp
     });
     return isAtLeastOneTileValid;
 }
-function isStatePositionInBoundsVec(ijk: THREE.Vector3, tileTypes:TileType[][], adjacentTilesParam?: Vector2[]) {
+function isStatePositionInBoundsVec(ijk: Vec3, tileTypes:TileType[][], adjacentTilesParam?: Vec2[]) {
     if (adjacentTilesParam === undefined) return isStatePositionInBounds(ijk.x, ijk.y, ijk.z, tileTypes);
     return isStatePositionInBounds(ijk.x, ijk.y, ijk.z, tileTypes, adjacentTilesParam);
 }
@@ -429,7 +430,7 @@ function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
     if (hasOwnHouseAdjacent) return true;
     
     // Must be connected to another road of same player OR a house
-    let playerAdjacentRoads:THREE.Vector3[] = [];
+    let playerAdjacentRoads:Vec3[] = [];
     const adjacentRoads = getRoadsOneAway(i,j,k);
     adjacentRoads.forEach((roadPos) => {
         if (isStatePositionInBoundsVec(roadPos, tileTypes)) {
@@ -505,7 +506,7 @@ export class RoadHouseState {
      * inserts a house/road at the location given inside the state array. Does NOT place in the game world.
      * @param indexLocation the location to add the house
      */
-    putState(indexLocation: THREE.Vector3, placementGoal: PositionStateType, playerName: string, playerColor: string) {
+    putState(indexLocation: Vec3, placementGoal: PositionStateType, playerName: string, playerColor: string) {
         this.stateArray[indexLocation.x][indexLocation.y][indexLocation.z] =
             new PositionState(playerName, placementGoal, playerColor);
     }
@@ -517,22 +518,22 @@ export class RoadHouseState {
                 for (let k = 0; k < this.depth; k++) {
                     switch (placementGoal) {
                         case PositionStateType.EMPTY:
-                            possibleLocations.push(new Vector3(i,j,k));
+                            possibleLocations.push(new Vec3(i,j,k));
                             break;
                         case PositionStateType.CITY:
                             //TODO
                             break;
                         case PositionStateType.ROAD:
                             if (validRoadLocation(i,j,k, this.tileTypes, this.stateArray, player)) {
-                                possibleLocations.push(new Vector3(i,j,k));
+                                possibleLocations.push(new Vec3(i,j,k));
                             }
                             break;
                         case PositionStateType.TOWN:
                             if (detached && validHouseLocationDisconnected(i,j,k, this.tileTypes, this.stateArray)) {
-                                possibleLocations.push(new Vector3(i,j,k));
+                                possibleLocations.push(new Vec3(i,j,k));
                             }
                             else if (validHouseLocationConnected(i,j,k, this.tileTypes, this.stateArray, player)) {
-                                possibleLocations.push(new Vector3(i,j,k));
+                                possibleLocations.push(new Vec3(i,j,k));
                             }
                             break;
                     }
@@ -545,20 +546,15 @@ export class RoadHouseState {
     getArray() {
         return this.stateArray;
     }
-    width: number;
 
-    height: number;
-
-    depth: number;
-
-    stateArray: PositionState[][][];
-
-    tileTypes: TileType[][];
-
-    validate(o: any): boolean {
-        return typeof(o) !== 'undefined' &&
-            typeof(o.width) === 'number' &&
-            
+    static validate(_o: any): boolean {
+        const o = _o as RoadHouseState;
+        return validateType(o, 'object') &&
+            validateType(o.width, 'number') &&
+            validateType(o.height, 'number') &&
+            validateType(o.depth, 'number') &&
+            validateType(o.stateArray, [[[PositionState]]]) &&
+            validateType(o.tileTypes, [['number']]);
     }
 
 }

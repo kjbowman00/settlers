@@ -1,17 +1,9 @@
 import * as THREE from 'three';
+import { TileType } from '../../../state/src/state/TileType';
 import { Hexagon } from './Hexagon';
 import { Noise } from './Noise';
 import { NoiseFactory } from './NoiseFactory';
 
-export enum TileType {
-    SHEEP,
-    WHEAT,
-    STONE,
-    BRICK,
-    WOOD,
-    WATER,
-    DESERT,
-}
 
 export class Tile {
     outerHexagon: Hexagon;
@@ -83,6 +75,4 @@ export class Tile {
         }
         return [0, 0, 0];
     }
-
-    
 }

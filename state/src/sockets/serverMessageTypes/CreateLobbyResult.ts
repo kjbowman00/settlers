@@ -1,4 +1,5 @@
 import { LobbyState } from "../../state/LobbyState";
+import { validateType } from "../Validator";
 
 export class CreateLobbyResult {
     initialLobbyState: LobbyState;
@@ -6,12 +7,13 @@ export class CreateLobbyResult {
 
     constructor(success: boolean, initialLobbyState: LobbyState) {
         this.success = success;
+        this.initialLobbyState = initialLobbyState;
     }
 
-    static validate(o: any) {
-        return typeof(o) !== 'undefined' &&
-            typeof(o.success) === 'boolean' &&
-            typeof(o.initialLobbyState) === 'object' &&
-            LobbyState.validate(o.initialLobbyState);
+    static validate(_o: any): boolean {
+        const o = _o as CreateLobbyResult;
+        return validateType(o, 'object') &&
+            validateType(o.initialLobbyState, LobbyState) &&
+            validateType(o.success, 'boolean');
     }
 }

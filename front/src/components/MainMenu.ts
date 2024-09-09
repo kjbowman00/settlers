@@ -2,7 +2,7 @@ import { generateUUID } from "three/src/math/MathUtils";
 import { AppSync } from "./AWSAppSync";
 import { MenuManager } from "./MenuManager";
 import { AbstractMenuContainer } from "./AbstractMenuContainer";
-import { randomPlayerColor } from "../Utility/PlayerRandomizer";
+import { randomPlayerColor } from "../utility/PlayerRandomizer";
 import { ClientSocketMessage } from "../../../state/src/sockets/ClientSocketMessage";
 import { CreateLobby } from "../../../state/src/sockets/clientMessageTypes/CreateLobby";
 import { ClientMessageType } from "../../../state/src/sockets/ClientMessageType";

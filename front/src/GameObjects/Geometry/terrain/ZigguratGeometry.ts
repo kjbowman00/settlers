@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils';
 import { BufferGeometry, Vector3, Vector2 } from 'three';
-import { Tile, TileType } from '../../../utility/Tile';
-import { Hexagon } from '../../../utility/Hexagon';
+import { Tile } from '../../../utility/Tile';
 import { GameObject } from '../../GameObject';
+import { TileType } from '../../../../../state/src/state/TileType';
 
 const ZIG_BLOCK_HEIGHT_PROP = 0.1; // Minimum width of top ziggurat block
 const SPACE_TOL_PROP = 0.01; // Minimum distance from ziggurat center to other object

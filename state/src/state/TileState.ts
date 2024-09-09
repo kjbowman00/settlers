@@ -1,4 +1,5 @@
-import { TileType } from "../../../front/src/utility/Tile";
+import { validateType } from "../sockets/Validator";
+import { TileType } from "./TileType";
 
 export class TileState {
     tileTypes: TileType[][];
@@ -33,5 +34,12 @@ export class TileState {
                 this.tileTypes[i].push(tileType);
             }
         }
+    }
+    static validate(_o: any) : boolean {
+        const o = _o as TileState;
+        return validateType(o, 'object') &&
+            validateType(o.tileTypes, [['number']]) &&
+            validateType(o.tileGridHeight, 'number') &&
+            validateType(o.tileGridWidth, 'number');
     }
 }
