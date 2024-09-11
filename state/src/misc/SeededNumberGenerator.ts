@@ -2,7 +2,11 @@
 export class SeededNumberGenerator {
     seed: number;
     constructor(seed: number) {
+        console.log(seed);
         this.seed = seed;
+        if (this.seed <= 1) {
+            this.seed = (this.seed *2**32) >>> 0;
+        }
     }
 
     random() {
