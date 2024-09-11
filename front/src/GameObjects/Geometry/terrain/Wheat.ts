@@ -4,6 +4,7 @@ import { Tile } from '../../../utility/Tile';
 import { RGB255, colorGeometry } from '../../../utility/ThreeUtils';
 import { GameObject } from '../../GameObject';
 import { TileType } from '../../../../../state/src/state/TileType';
+import { SeededNumberGenerator } from '../../../../../state/src/misc/SeededNumberGenerator';
 
 
 /**
@@ -11,7 +12,9 @@ import { TileType } from '../../../../../state/src/state/TileType';
  * @param tile The tile for this hexagon
  * @param geoms list of geometries to append to
  */
-function addWheatField(tile: Tile, geoms: THREE.BufferGeometry[], rotation:number):number {
+function addWheatField(tile: Tile, geoms: THREE.BufferGeometry[], rotation:number,
+    random: SeededNumberGenerator
+):number {
     const centerX = tile.innerHexagon.centerX;
     const centerY = tile.innerHexagon.centerY;
     const r = tile.innerHexagon.radius;
@@ -25,7 +28,7 @@ function addWheatField(tile: Tile, geoms: THREE.BufferGeometry[], rotation:numbe
 
     const numberOfWheatRows = Math.floor(r / (depth + separation)) - 1;
     let bottomSide:number;
-    if (Math.random() > 0.5) {
+    if (random.random() > 0.5) {
         bottomSide = 1;
     } else {
         bottomSide = -1;
@@ -191,7 +194,7 @@ class WheatField extends GameObject {
 
     windmillTurbines: THREE.Mesh[];
 
-    constructor(tiles:Tile[][]) {
+    constructor(tiles:Tile[][], random: SeededNumberGenerator) {
         super();
         const wheatFieldGeometries: THREE.BufferGeometry[] = [];
         const windmillBaseGeometries: THREE.BufferGeometry[] = [];
@@ -201,8 +204,10 @@ class WheatField extends GameObject {
             for (let j = 0; j < col.length; j++) {
                 if (col[j].tileType === TileType.WHEAT) {
                     // 6 possible rotations in the hexagon
-                    const rotation = Math.floor(Math.random()*6) * Math.PI/3;
-                    const bottomSideWithWheat = addWheatField(col[j], wheatFieldGeometries, rotation);
+                    const rotation = Math.floor(random.random()*6) * Math.PI/3;
+                    const bottomSideWithWheat = addWheatField(col[j], wheatFieldGeometries, rotation,
+                        random
+                    );
                     addWindmill(col[j], windmillBaseGeometries,
                         rotation, bottomSideWithWheat, turbines);
                 }

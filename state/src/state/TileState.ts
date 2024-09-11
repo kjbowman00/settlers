@@ -1,3 +1,4 @@
+import { SeededNumberGenerator } from "../misc/SeededNumberGenerator";
 import { validateType } from "../sockets/Validator";
 import { TileType } from "./TileType";
 
@@ -6,7 +7,7 @@ export class TileState {
     tileGridWidth: number;
     tileGridHeight: number;
 
-    constructor() {
+    constructor(random: SeededNumberGenerator) {
         // Default to random tiles for now. This will be handled by the server later on.
         this.tileTypes = [];
         this.tileGridWidth = 6;
@@ -14,7 +15,7 @@ export class TileState {
         for (let i = 0; i < this.tileGridWidth; i++) {
             this.tileTypes.push([]);
             for (let j = 0; j < this.tileGridHeight; j++) {
-                const typeNum = Math.floor(Math.random() * 7);
+                const typeNum = Math.floor(random.random() * 7);
                 let tileType: TileType;
                 if (typeNum === 0) {
                     tileType = TileType.STONE;

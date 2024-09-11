@@ -5,18 +5,20 @@ import { Tile } from '../../../utility/Tile';
 import { Hexagon } from '../../../utility/Hexagon';
 import { GameObject } from '../../GameObject';
 import { TileType } from '../../../../../state/src/state/TileType';
+import { SeededNumberGenerator } from '../../../../../state/src/misc/SeededNumberGenerator';
 
 const TREE_RADIUS_HEXAGON_MULTIPLE = 0.1; // Tree radius multiple compared to hexagon radius
 const TREE_HEIGHT_HEXAGON_MULTIPLE = 0.2; // Tree height compared to hexagon radius
 
 function addTreeGeometry(position:Vector3,treeRadius:number, 
-        treeSectionHeight:number, geometries:THREE.BufferGeometry[]) {
+        treeSectionHeight:number, geometries:THREE.BufferGeometry[],
+        random: SeededNumberGenerator) {
 
     const randomMultiplierRange = [0.75, 1.25]; // Modifies the height of the tree between these two multiples
-    const radiusModulator = THREE.MathUtils.randFloat(0.8, 1.2);
+    const radiusModulator = random.randomFloatRange(0.8, 1.2);
 
     // Make the trunk
-    const trunkHeight = treeSectionHeight * THREE.MathUtils.randFloat(randomMultiplierRange[0], 
+    const trunkHeight = treeSectionHeight * random.randomFloatRange(randomMultiplierRange[0], 
         randomMultiplierRange[1]);
     const trunkRadius = treeRadius*0.3;
     const trunkGeometry = new THREE.CylinderGeometry(trunkRadius, trunkRadius, trunkHeight, 8, 1, true);
@@ -35,12 +37,12 @@ function addTreeGeometry(position:Vector3,treeRadius:number,
     geometries.push(trunkGeometry);
 
     const percentOverlap = 0.4; // how much the y value should be modulated. 0 = same height as before.
-    const heightModulator = THREE.MathUtils.randFloat(randomMultiplierRange[0],
+    const heightModulator = random.randomFloatRange(randomMultiplierRange[0],
         randomMultiplierRange[1]);
     // Make the leaves/cones
     let y = trunkHeight + position.y;
     // Either 3 or 4 tall
-    const numCones = 3 + Math.round(Math.random());
+    const numCones = 3 + Math.round(random.random());
     for (let i = 0; i < numCones; i++) {
         const r = treeRadius * (1 - i * 0.3) * radiusModulator;
         const h = treeSectionHeight * (1 - i * 0.3) * heightModulator;
@@ -62,7 +64,7 @@ function addTreeGeometry(position:Vector3,treeRadius:number,
     }
 }
 
-function addForest(tile:Tile, geometries:BufferGeometry[]) {
+function addForest(tile:Tile, geometries:BufferGeometry[], random: SeededNumberGenerator) {
     // Custom hexagon because the inner hexagon isn't small enough to limit our trees
     const customHexagon = new Hexagon(
         tile.innerHexagon.centerX,
@@ -79,14 +81,14 @@ function addForest(tile:Tile, geometries:BufferGeometry[]) {
     // try to generate trees
     for (let i = 0; i < 100; i++) {
         // TODO: Handle intersecting trees or generate more consistently in a grid pattern.
-        const x = THREE.MathUtils.randFloat(leftMost, rightMost);
-        const z = THREE.MathUtils.randFloat(downMost, upMost); // TODO Refactor this to centerZ
+        const x = random.randomFloatRange(leftMost, rightMost);
+        const z = random.randomFloatRange(downMost, upMost); // TODO Refactor this to centerZ
         if (customHexagon.isPointInside(new THREE.Vector2(x,z))) {
             const y = tile.getHeight(new THREE.Vector2(x,z));
             addTreeGeometry(new Vector3(x,y,z),
                 tile.outerHexagon.radius * TREE_RADIUS_HEXAGON_MULTIPLE,
                 tile.outerHexagon.radius * TREE_HEIGHT_HEXAGON_MULTIPLE,
-                geometries);
+                geometries, random);
         }
     }
     
@@ -95,18 +97,20 @@ function addForest(tile:Tile, geometries:BufferGeometry[]) {
 export class TreeGeometry extends GameObject {
     treeMesh: THREE.Mesh;
 
-    constructor(tiles: Tile[][]) {
+    constructor(tiles: Tile[][], random: SeededNumberGenerator) {
         super();
         const geometries: BufferGeometry[] = [];
+        console.log(tiles);
         for (let i = 0; i < tiles.length; i++) {
             const col = tiles[i];
             for (let j = 0; j < col.length; j++) {
                 if (col[j].tileType === TileType.WOOD) {
-                    addForest(col[j], geometries);
+                    addForest(col[j], geometries, random);
                 }
             }
         }
 
+        console.log(geometries);
         const geom = BufferGeometryUtils.mergeBufferGeometries(geometries);
 
         const mat = new THREE.MeshStandardMaterial({

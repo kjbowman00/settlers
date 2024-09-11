@@ -3,6 +3,7 @@ import { TileType } from '../../../state/src/state/TileType';
 import { Hexagon } from './Hexagon';
 import { Noise } from './Noise';
 import { NoiseFactory } from './NoiseFactory';
+import { SeededNumberGenerator } from '../../../state/src/misc/SeededNumberGenerator';
 
 
 export class Tile {
@@ -16,12 +17,14 @@ export class Tile {
 
     shouldClampDistToCenterHexagon: boolean;
 
-    constructor(x: number, y: number, innerRadius: number, outerRadius: number, tileType: TileType) {
+    constructor(x: number, y: number, innerRadius: number, outerRadius: number, tileType: TileType,
+        random: SeededNumberGenerator
+    ) {
         // Initialize variables
         this.innerHexagon = new Hexagon(x, y, innerRadius);
         this.outerHexagon = new Hexagon(x, y, outerRadius);
         this.tileType = tileType;
-        this.noiseMap = NoiseFactory.noiseFromTileType(this.tileType, this.innerHexagon);
+        this.noiseMap = NoiseFactory.noiseFromTileType(this.tileType, this.innerHexagon, random);
 
         // Tall peak in the middle looks good for the mountains but not others.
         if (tileType === TileType.STONE) {

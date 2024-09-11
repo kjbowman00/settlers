@@ -4,6 +4,7 @@ import { BufferGeometry, Vector3, Vector2 } from 'three';
 import { Tile } from '../../../utility/Tile';
 import { GameObject } from '../../GameObject';
 import { TileType } from '../../../../../state/src/state/TileType';
+import { SeededNumberGenerator } from '../../../../../state/src/misc/SeededNumberGenerator';
 
 const ZIG_BLOCK_HEIGHT_PROP = 0.1; // Minimum width of top ziggurat block
 const SPACE_TOL_PROP = 0.01; // Minimum distance from ziggurat center to other object
@@ -63,16 +64,17 @@ function distanceToSquare(pt:Vector2,center:Vector2,radiusVec:Vector2) {
     return z-R;
 }
 
-function generateZiggurat(hexRadius:number, centers:Array<Vector2>, radiusVecs:Array<Vector2>, numSquares:number) {
+function generateZiggurat(hexRadius:number, centers:Array<Vector2>, radiusVecs:Array<Vector2>,
+    numSquares:number, random: SeededNumberGenerator) {
     let it = 0;
     const MAX_IT = 10;
     const spaceTol = getSpaceTol(hexRadius);
     while(++it < MAX_IT) {
         // Generate prospective point in hexagon in polar coordinates
-        const phi = THREE.MathUtils.randFloat(0.,2*Math.PI);
+        const phi = random.randomFloatRange(0.,2*Math.PI);
         const alpha = THREE.MathUtils.euclideanModulo(phi,Math.PI/3);
         const R = Math.cos(alpha)/hexRadius;
-        const r = THREE.MathUtils.randFloat((R-spaceTol)/5,R-spaceTol);
+        const r = random.randomFloatRange((R-spaceTol)/5,R-spaceTol);
         // Convert point to euclidean
         let pt = new Vector2(r*Math.cos(phi), r*Math.sin(phi));
         let validPoint = true;
@@ -86,8 +88,8 @@ function generateZiggurat(hexRadius:number, centers:Array<Vector2>, radiusVecs:A
         }
         if(validPoint) {
             centers[numSquares] = pt;
-            const newRad = THREE.MathUtils.randFloat(0.,minDist/Math.SQRT2);
-            const newAngle = THREE.MathUtils.randFloat(0.,Math.PI/2);
+            const newRad = random.randomFloatRange(0.,minDist/Math.SQRT2);
+            const newAngle = random.randomFloatRange(0.,Math.PI/2);
             radiusVecs[numSquares] = new Vector2(newRad*Math.cos(newAngle), newRad*Math.sin(newAngle));
             return true;
         }
@@ -95,14 +97,14 @@ function generateZiggurat(hexRadius:number, centers:Array<Vector2>, radiusVecs:A
     return false;
 }
 
-function generateZiggurats(tile:Tile, geometries:BufferGeometry[]) {
+function generateZiggurats(tile:Tile, geometries:BufferGeometry[], random: SeededNumberGenerator) {
     const numZigs = generateGeometricSample();
     let centers = new Array<Vector2>(numZigs);
     let radiusVecs = new Array<Vector2>(numZigs);
     let hexRadius = tile.innerHexagon.radius;
     let hexCenter = new Vector2(tile.innerHexagon.centerX, tile.innerHexagon.centerY)
     for(let i = 0; i < numZigs; i++) {
-        let createdPt = generateZiggurat(hexRadius, centers, radiusVecs, i);
+        let createdPt = generateZiggurat(hexRadius, centers, radiusVecs, i, random);
         if(!createdPt) {
             console.log("DID NOT CREATE POINT")
         } //TODO: THROW ERROR OR SOMETHING
@@ -115,14 +117,14 @@ function generateZiggurats(tile:Tile, geometries:BufferGeometry[]) {
 export class ZigguratGeometry extends GameObject{
     pyramidMesh: THREE.Mesh;
 
-    constructor(tiles:Tile[][]) {
+    constructor(tiles:Tile[][], random: SeededNumberGenerator) {
         super();
         const geometries: BufferGeometry[] = [];
         for (let i = 0; i < tiles.length; i++) {
             const col = tiles[i];
             for (let j = 0; j < col.length; j++) {
                 if (col[j].tileType === TileType.BRICK) {
-                    generateZiggurats(col[j], geometries);
+                    generateZiggurats(col[j], geometries, random);
                 }
             }
         }

@@ -1,3 +1,4 @@
+import { SeededNumberGenerator } from "../misc/SeededNumberGenerator";
 import { validateType } from "../sockets/Validator";
 import { RoadHouseState } from "./RoadHouseState";
 import { TileState } from "./TileState";
@@ -14,7 +15,8 @@ export class GameState {
     constructor(seed: number) {
         this.seed = seed;
 
-        this.tileState = new TileState();
+        const random = new SeededNumberGenerator(seed);
+        this.tileState = new TileState(random);
         this.roadHouseState = new RoadHouseState(this.tileState.tileTypes);
 
     }

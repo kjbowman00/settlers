@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { Vector2, Vector3 } from 'three';
 import { addContinentalShelf } from './ContinentalShelf';
-import { Tile } from '../../../utility/Tile';
 import { GameObject } from '../../GameObject';
 import { TileType } from '../../../../../state/src/state/TileType';
+import { SeededNumberGenerator } from '../../../../../state/src/misc/SeededNumberGenerator';
+import { Tile } from '../../../utility/Tile';
 
 /**
  * Adds a triangle's vertex positions and vertex colors to the given arrays
@@ -56,6 +57,8 @@ export class TerrainGeometry extends GameObject{
 
     terrainMesh: THREE.Mesh;
 
+    random: SeededNumberGenerator;
+
     /**
      * Creates a terrain
      * @param hexagonWorldRadius The radius of hexagon from center to corner in worldspace
@@ -72,7 +75,8 @@ export class TerrainGeometry extends GameObject{
         hexagonWorldRadius: number,
         hexagonVertexRadius: number,
         innerHexagonVertexRadius: number,
-        tileTypes: TileType[][]
+        tileTypes: TileType[][],
+        random: SeededNumberGenerator
     ) {
         super();
         this.tileGridWidth = tileTypes.length;
@@ -80,6 +84,7 @@ export class TerrainGeometry extends GameObject{
         this.hexagonWorldRadius = hexagonWorldRadius;
         this.hexagonVertexRadius = hexagonVertexRadius;
         this.innerHexagonVertexRadius = innerHexagonVertexRadius;
+        this.random = random;
 
         // Length of a hexagon vertex segment in worldspace
         this.onePointLen = this.hexagonWorldRadius / this.hexagonVertexRadius;
@@ -115,7 +120,8 @@ export class TerrainGeometry extends GameObject{
                     basePos.y + hexagonWorldHeight * 0.5,
                     this.onePointLen * this.innerHexagonVertexRadius,
                     this.hexagonWorldRadius,
-                    tileType
+                    tileType,
+                    this.random
                 );
                 this.tiles[i].push(tile);
                 if (tileType !== TileType.WATER) {

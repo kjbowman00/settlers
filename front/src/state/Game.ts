@@ -19,6 +19,7 @@ import { StateUpdateController } from './StateUpdateController';
 import { GameState } from '../../../state/src/state/GameState';
 import { Vec3 } from '../../../state/src/state/Vec3';
 import { convertVec2, convertVec3 } from '../utility/ThreeUtils';
+import { SeededNumberGenerator } from '../../../state/src/misc/SeededNumberGenerator';
 
 export class Game {
     world: GameWorld;
@@ -41,24 +42,27 @@ export class Game {
         initialGameState: GameState) {
         this.gameState = initialGameState;
         this.world = new GameWorld(scene);
+        
+        const seededNumberGenerator = new SeededNumberGenerator(initialGameState.seed);
+        console.log(initialGameState);
 
         const tileState = initialGameState.tileState
         const tileTypes = tileState.tileTypes;
         const hexagonWorldRadius = 3;
-        this.terrain = new TerrainGeometry(hexagonWorldRadius, 6, 5, tileTypes);
+        this.terrain = new TerrainGeometry(hexagonWorldRadius, 6, 5, tileTypes, seededNumberGenerator);
         this.world.addGameObject(this.terrain);
 
         this.cameraControls = new CameraController(canvas, tileState.tileGridWidth,
             tileState.tileGridHeight, hexagonWorldRadius, this.terrain, initialCameraAspectRatio);
         this.world.addGameObject(this.cameraControls);
         
-        this.trees = new TreeGeometry(this.terrain.tiles);
+        this.trees = new TreeGeometry(this.terrain.tiles, seededNumberGenerator);
         this.world.addGameObject(this.trees);
 
         this.lighting = new Lighting();
         this.world.addGameObject(this.lighting);
 
-        this.pyramids = new ZigguratGeometry(this.terrain.tiles);
+        this.pyramids = new ZigguratGeometry(this.terrain.tiles, seededNumberGenerator);
         this.world.addGameObject(this.pyramids);
 
         this.oceanWater = new OceanWater(-hexagonWorldRadius*0.1);
@@ -66,7 +70,7 @@ export class Game {
         this.world.addGameObject(this.oceanWater);
         this.world.addGameObject(this.oceanFloor);
 
-        this.wheatField = new WheatField(this.terrain.tiles);
+        this.wheatField = new WheatField(this.terrain.tiles, seededNumberGenerator);
         this.world.addGameObject(this.wheatField);
 
         this.houseGeometry = new HouseGeometry(initialGameState.roadHouseState, hexagonWorldRadius);

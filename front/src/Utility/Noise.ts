@@ -1,3 +1,4 @@
+import { SeededNumberGenerator } from '../../../state/src/misc/SeededNumberGenerator';
 import { Hexagon } from './Hexagon';
 
 export class Noise {
@@ -17,18 +18,22 @@ export class Noise {
 
     noiseDensity: number;
 
+    random: SeededNumberGenerator;
+
     constructor(
         noiseDensity: number,
         worldX: number,
         worldY: number,
         width: number,
         hexagon: Hexagon,
-        scaleFactor: number
+        scaleFactor: number,
+        random: SeededNumberGenerator
     ) {
         this.worldX = worldX;
         this.worldY = worldY;
         this.width = width;
         this.scaleFactor = scaleFactor;
+        this.random = random;
 
         this.noiseDensity = noiseDensity;
         this.noise = new Array(noiseDensity * noiseDensity).fill(0);
@@ -45,7 +50,7 @@ export class Noise {
                 // let x = (i / (this.noiseDensity-1))*this.width + this.worldX;
                 // let y = (j / (this.noiseDensity-1))*this.width + this.worldY;
 
-                const gradient = [Math.random(), Math.random()];
+                const gradient = [this.random.random(), this.random.random()];
                 let norm = gradient[0] * gradient[0] + gradient[1] * gradient[1];
                 norm = Math.sqrt(norm);
                 this.perlinNoise[j * this.noiseDensity + i] = [gradient[0] / norm, gradient[1] / norm];
@@ -122,7 +127,7 @@ export class Noise {
                 const y = (j / (this.noiseDensity - 1)) * this.width + this.worldY;
 
                 // Initialize with random noise that gets smaller at edges of hexagon
-                this.noise[j * this.noiseDensity + i] = Math.random() * this.hexagon.distanceToHexagon(x, y);
+                this.noise[j * this.noiseDensity + i] = this.random.random() * this.hexagon.distanceToHexagon(x, y);
             }
         }
     }
