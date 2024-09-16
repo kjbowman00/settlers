@@ -1,8 +1,11 @@
-import { PositionState, PositionStateType } from './PositionState';
 import { validateType } from '../sockets/Validator';
 import { Vec2 } from './Vec2';
 import { Vec3 } from './Vec3';
 import { TileType } from './TileType';
+import { platform } from 'os';
+import { RoadHousePositionState } from './RoadHousePositionState';
+import { RoadHouseType } from './RoadHouseType';
+import { PlayerState } from './PlayerState';
 
 
 /**
@@ -331,7 +334,7 @@ function isTilePositionInBounds(i:number, j:number, tileTypes:TileType[][]) {
  * Used at the begining of a game to allow players to place houses anywhere on the map.
  */
 function validHouseLocationDisconnected(i:number, j:number, k:number, tileTypes:TileType[][],
-        state:PositionState[][][]): boolean {
+        state:RoadHousePositionState[][][]): boolean {
     // Houses can only be on corners of hexagons
     if (k === 0 || k === 2 || k === 4) return false;
 
@@ -354,14 +357,14 @@ function validHouseLocationDisconnected(i:number, j:number, k:number, tileTypes:
     let atLeastOneHouseAdjacent = false;
     adjacentHouseCoords.forEach((houseCoord) => {
         if (isStatePositionInBoundsVec(houseCoord, tileTypes) &&
-        state[houseCoord.x][houseCoord.y][houseCoord.z].type !== PositionStateType.EMPTY) {
+        state[houseCoord.x][houseCoord.y][houseCoord.z].type !== RoadHouseType.NONE) {
             atLeastOneHouseAdjacent = true;
         }
     });
     if (atLeastOneHouseAdjacent) return false;
 
     // Can't be a house/town already in this position
-    return state[i][j][k].type === PositionStateType.EMPTY;
+    return state[i][j][k].type === RoadHouseType.NONE;
 }
 
 /**
@@ -369,7 +372,7 @@ function validHouseLocationDisconnected(i:number, j:number, k:number, tileTypes:
  * Used AFTER the initial house placements.
  */
 function validHouseLocationConnected(i:number, j:number, k:number, tileTypes:TileType[][],
-        state:PositionState[][][], playerName: String): boolean {
+        state:RoadHousePositionState[][][], playerId: string): boolean {
 
     // Houses only placed on k == 1 and 3
     if (k !== 1 && k !== 3) return false;
@@ -384,7 +387,7 @@ function validHouseLocationConnected(i:number, j:number, k:number, tileTypes:Til
     adjacentRoads.forEach((roadPos) => {
         if (isStatePositionInBoundsVec(roadPos, tileTypes)) {
             const stateAtPos = state[roadPos.x][roadPos.y][roadPos.z];
-            if (stateAtPos.type !== PositionStateType.EMPTY && stateAtPos.player === playerName) {
+            if (stateAtPos.type !== RoadHouseType.NONE && stateAtPos.player?.id === playerId) {
                 connectedToAtLeastOneRoad = true;
             }
         }
@@ -394,7 +397,7 @@ function validHouseLocationConnected(i:number, j:number, k:number, tileTypes:Til
 }
 
 function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
-        state:PositionState[][][], playerName: String): boolean {
+        state:RoadHousePositionState[][][], playerId: string): boolean {
     // Roads only placed on k = 0, 2, 4
     if (k !== 0 && k !== 2 && k !== 4) return false;
 
@@ -402,7 +405,7 @@ function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
     if (!isStatePositionInBounds(i,j,k,tileTypes)) return false;
     
     // Can't already have a road there
-    if (state[i][j][k].type !== PositionStateType.EMPTY) return false;
+    if (state[i][j][k].type !== RoadHouseType.NONE) return false;
 
     // At least one tile non water
     let atLeastOneNotWater = false;
@@ -421,8 +424,8 @@ function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
     adjacentHousesPositions.forEach((housePos) => {
         if (isStatePositionInBoundsVec(housePos, tileTypes)) {
             const houseStateAtPos = state[housePos.x][housePos.y][housePos.z];
-            if (houseStateAtPos.type !== PositionStateType.EMPTY &&
-                    houseStateAtPos.player === playerName) {
+            if (houseStateAtPos.type !== RoadHouseType.NONE &&
+                    houseStateAtPos.player?.id === playerId) {
                 hasOwnHouseAdjacent = true;
             }
         }
@@ -435,7 +438,7 @@ function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
     adjacentRoads.forEach((roadPos) => {
         if (isStatePositionInBoundsVec(roadPos, tileTypes)) {
             const stateAtPos = state[roadPos.x][roadPos.y][roadPos.z];
-            if (stateAtPos.type === PositionStateType.ROAD && stateAtPos.player === playerName) {
+            if (stateAtPos.type === RoadHouseType.ROAD && stateAtPos.player?.id === playerId) {
                 playerAdjacentRoads.push(roadPos);
             }
         }
@@ -448,8 +451,8 @@ function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
         if (isStatePositionInBoundsVec(housePos, tileTypes)) {
             const houseStateAtPos = state[housePos.x][housePos.y][housePos.z];
             // Only care about houses the player doesn't own themselves
-            if (houseStateAtPos.type !== PositionStateType.EMPTY &&
-                    houseStateAtPos.player !== playerName) {
+            if (houseStateAtPos.type !== RoadHouseType.NONE &&
+                    houseStateAtPos.player?.id !== playerId) {
                 const roadPositionsBlockedByThisHouse = getRoadsOneAway(housePos.x, housePos.y, housePos.z);
                 playerAdjacentRoads = playerAdjacentRoads.filter((value, index, array) => {
                     return !roadPositionsBlockedByThisHouse.includes(value);
@@ -474,15 +477,15 @@ function validRoadLocation(i:number, j:number, k:number, tileTypes:TileType[][],
  *  \._._./         \1_2_3/
  */
 export class RoadHouseState {
-    width: number;
+    private width: number;
 
-    height: number;
+    private height: number;
 
-    depth: number;
+    private depth: number;
 
-    stateArray: PositionState[][][];
+    private stateArray: RoadHousePositionState[][][];
 
-    tileTypes: TileType[][];
+    private tileTypes: TileType[][];
 
     constructor(tileTypes:TileType[][]) {
         this.tileTypes = tileTypes;
@@ -496,7 +499,7 @@ export class RoadHouseState {
             for (let j = 0; j < this.height; j++) {
                 this.stateArray[i][j] = [];
                 for (let k = 0; k < this.depth; k++) {
-                    this.stateArray[i][j][k] = new PositionState('empty_position', PositionStateType.EMPTY, "");
+                    this.stateArray[i][j][k] = new RoadHousePositionState(undefined, RoadHouseType.NONE);
                 }
             }
         }
@@ -506,29 +509,29 @@ export class RoadHouseState {
      * inserts a house/road at the location given inside the state array. Does NOT place in the game world.
      * @param indexLocation the location to add the house
      */
-    putState(indexLocation: Vec3, placementGoal: PositionStateType, playerName: string, playerColor: string) {
+    putState(indexLocation: Vec3, placementGoal: RoadHouseType, player: PlayerState|undefined) {
         this.stateArray[indexLocation.x][indexLocation.y][indexLocation.z] =
-            new PositionState(playerName, placementGoal, playerColor);
+            new RoadHousePositionState(player, placementGoal);
     }
 
-    getPossiblePlacementLocations(placementGoal: PositionStateType, detached: boolean, player: string) {
+    getPossiblePlacementLocations(placementGoal: RoadHouseType, detached: boolean, player: string) {
         const possibleLocations = [];
         for (let i = 0 ; i < this.width; i++ ) {
             for (let j = 0; j < this.height; j++) {
                 for (let k = 0; k < this.depth; k++) {
                     switch (placementGoal) {
-                        case PositionStateType.EMPTY:
+                        case RoadHouseType.NONE:
                             possibleLocations.push(new Vec3(i,j,k));
                             break;
-                        case PositionStateType.CITY:
+                        case RoadHouseType.CITY:
                             //TODO
                             break;
-                        case PositionStateType.ROAD:
+                        case RoadHouseType.ROAD:
                             if (validRoadLocation(i,j,k, this.tileTypes, this.stateArray, player)) {
                                 possibleLocations.push(new Vec3(i,j,k));
                             }
                             break;
-                        case PositionStateType.TOWN:
+                        case RoadHouseType.HOUSE:
                             if (detached && validHouseLocationDisconnected(i,j,k, this.tileTypes, this.stateArray)) {
                                 possibleLocations.push(new Vec3(i,j,k));
                             }
@@ -543,6 +546,18 @@ export class RoadHouseState {
         return possibleLocations;
     }
 
+    isValidPlacementLocation(i: number, j: number, k:number, houseType: RoadHouseType, playerId: string) {
+        if (houseType == RoadHouseType.ROAD) return validRoadLocation(i, j, k, this.tileTypes, this.stateArray, playerId);
+        if (houseType == RoadHouseType.HOUSE) return validHouseLocationConnected(i, j, k, this.tileTypes, this.stateArray, playerId);
+        //TODO: CITY
+        return false;
+    }
+    isValidPlacementLocationInitial(i: number, j: number, k: number, houseType: RoadHouseType, playerId: string) {
+        if (houseType == RoadHouseType.ROAD) return validRoadLocation(i, j, k, this.tileTypes, this.stateArray, playerId);
+        if (houseType == RoadHouseType.HOUSE) return validHouseLocationDisconnected(i, j, k, this.tileTypes, this.stateArray);
+        return false;
+    }
+
     getArray() {
         return this.stateArray;
     }
@@ -553,7 +568,7 @@ export class RoadHouseState {
             validateType(o.width, 'number') &&
             validateType(o.height, 'number') &&
             validateType(o.depth, 'number') &&
-            validateType(o.stateArray, [[[PositionState]]]) &&
+            validateType(o.stateArray, [[[RoadHousePositionState]]]) &&
             validateType(o.tileTypes, [['number']]);
     }
 

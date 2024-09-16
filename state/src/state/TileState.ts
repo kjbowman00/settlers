@@ -10,8 +10,8 @@ export class TileState {
     constructor(random: SeededNumberGenerator) {
         // Default to random tiles for now. This will be handled by the server later on.
         this.tileTypes = [];
-        this.tileGridWidth = 6;
-        this.tileGridHeight = 7;
+        this.tileGridWidth = 5;
+        this.tileGridHeight = 5;
         const totalTiles = this.tileGridWidth * this.tileGridHeight;
 
         // Form hexagonal map - ocean tiles on edges. Keep as wide and tall as possible but always decrease away from center.

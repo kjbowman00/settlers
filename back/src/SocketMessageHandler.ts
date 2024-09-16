@@ -5,6 +5,7 @@ import { UserData } from "./dataHolders/UserData";
 import { CreateLobbyHandler } from "./handlers/CreateLobbyHandler";
 import { EndTurnHandler } from "./handlers/EndTurnHandler";
 import { JoinLobbyHandler } from "./handlers/JoinLobbyHandler";
+import { RoadHouseChangeHandler } from "./handlers/RoadHouseChangeHandler";
 import { StartGameHandler } from "./handlers/StartGameHandler";
 
 
@@ -18,6 +19,8 @@ export class SocketMessageHandler {
     joinLobbyHandler = new JoinLobbyHandler(this.lobbiesData, this.userData);
     startGamehandler = new StartGameHandler(this.lobbiesData, this.userData);
     endTurnHandler = new EndTurnHandler(this.lobbiesData, this.userData);
+    roadHouseChangeHandler = new RoadHouseChangeHandler(this.lobbiesData, this.userData);
+
 
     userConnected(id: string, socketWrapper: SocketWrapper) {
         if ( ! this.running) return;
@@ -58,6 +61,7 @@ export class SocketMessageHandler {
         case ClientMessageType.LEAVE_LOBBY:
             break;
         case ClientMessageType.ROAD_HOUSE_CHANGE:
+            this.roadHouseChangeHandler.handle(parsed.payload, uuid);
             break;
         case ClientMessageType.START_GAME:
             this.startGamehandler.handle(parsed.payload, uuid);

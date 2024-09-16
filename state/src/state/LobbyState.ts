@@ -19,6 +19,7 @@ export class LobbyState {
 
     isPlaying: boolean; // Whether or not the game is in the menu or playing state
     gameState: GameState | undefined; // Undefined if not in game yet
+    inInitialPlacementStage: boolean = false;
 
     activeTurnUserIndex: number;
 
