@@ -145,6 +145,8 @@ function initialPlacementPhase() {
     expect(serverHouseRes.k).toBe(placement.z);
     expect(serverHouseRes.roadHouseType).toBe(RoadHouseType.ROAD);
     let serverChangeTurnRes = user1.messages[user1.messages.length -1].payload as InitialTurnStarted;
+    expect(InitialTurnStarted.validate(serverChangeTurnRes)).toBe(true);
+    expect(serverChangeTurnRes.playerId).toBe(user2.id);
 
     // user 2 placements
     placement = lobby!.lobbyState.gameState!.roadHouseState.getPossiblePlacementLocations(RoadHouseType.HOUSE, true, user2.id)[0];
@@ -173,6 +175,9 @@ function initialPlacementPhase() {
 
     expect(lobby?.lobbyState.activeTurnUserIndex).toBe(0);
     expect(lobby?.lobbyState.inInitialPlacementStage).toBe(true);
+     serverChangeTurnRes = user1.messages[user1.messages.length -1].payload as InitialTurnStarted;
+    expect(InitialTurnStarted.validate(serverChangeTurnRes)).toBe(true);
+    expect(serverChangeTurnRes.playerId).toBe(user1.id);
     
     // User 1 again
     placement = lobby!.lobbyState.gameState!.roadHouseState.getPossiblePlacementLocations(RoadHouseType.HOUSE, true, user1.id)[0];
@@ -202,6 +207,9 @@ function initialPlacementPhase() {
     expect(serverHouseRes.j).toBe(placement.y);
     expect(serverHouseRes.k).toBe(placement.z);
     expect(serverHouseRes.roadHouseType).toBe(RoadHouseType.ROAD);
+    serverChangeTurnRes = user1.messages[user1.messages.length -1].payload as TurnStarted;
+    expect(TurnStarted.validate(serverChangeTurnRes)).toBe(true);
+    expect(serverChangeTurnRes.playerId).toBe(user1.id);
 }
 
 // TODO: Test for house updates
